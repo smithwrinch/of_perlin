@@ -1,14 +1,19 @@
 #pragma once
 
 #include "ofMain.h"
-#include "vectorField.h"
-#include "particle.h"
-#include "ofxGui.h"
-#include <stdlib.h>
-#include <math.h>
+#include <iostream>
+#include "mainScene.h"
+#include "fieldScene.h"
+#include "baseScene.h"
 
 class ofApp : public ofBaseApp{
 	public:
+
+		ofImage img; //for screenshots
+		BaseScene * currentScene;
+		MainScene mainScene;
+		FieldScene fieldScene;
+		
 		void setup();
 		void update();
 		void draw();
@@ -25,17 +30,15 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		VectorField vectorField;
-    vector<Particle *> particles;
-		ofImage img; //for screenshots
-
+		// VectorField vectorField;
+    // vector<Particle *> particles;
 		// int maxParticles = 20000;
-	private:
-		void addNewParticle(float x, float y);
-		void addNewParticles(float x, float y);
-
-		ofxIntSlider maxParticles;
-		ofxIntSlider brushRadius;
-		ofxIntSlider brushThickness;
-		ofxPanel gui;
+	// private:
+	// 	void addNewParticle(float x, float y);
+	// 	void addNewParticles(float x, float y);
+	//
+	// 	ofxIntSlider maxParticles;
+	// 	ofxIntSlider brushRadius;
+	// 	ofxIntSlider brushThickness;
+	// 	ofxPanel gui;
 };
