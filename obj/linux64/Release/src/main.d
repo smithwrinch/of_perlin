@@ -1,5 +1,5 @@
 obj/linux64/Release/src/main.o: \
- /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/main.cpp \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/main.cpp \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/ofMain.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/utils/ofConstants.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/tess2/include/tesselator.h \
@@ -558,9 +558,21 @@ obj/linux64/Release/src/main.o: \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/3d/of3dUtils.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/3d/ofCamera.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/3d/ofEasyCam.h \
- /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/ofApp.h \
- /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/ofxVectorField.h \
- /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/Particle.h
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/ofApp.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/vectorField.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/particle.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGui.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxToggle.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxBaseGui.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxSlider.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxInputField.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGuiUtils.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxSliderGroup.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGuiGroup.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxButton.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxLabel.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxColorPicker.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxPanel.h
 
 /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/ofMain.h:
 
@@ -1712,8 +1724,32 @@ obj/linux64/Release/src/main.o: \
 
 /home/hans/OF/of_v0.11.0_linux64gcc6_release/libs/openFrameworks/3d/ofEasyCam.h:
 
-/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/ofApp.h:
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/ofApp.h:
 
-/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/ofxVectorField.h:
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/vectorField.h:
 
-/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/artificialLife/src/Particle.h:
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/particle.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGui.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxToggle.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxBaseGui.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxSlider.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxInputField.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGuiUtils.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxSliderGroup.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxGuiGroup.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxButton.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxLabel.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxColorPicker.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxPanel.h:

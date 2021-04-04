@@ -1,22 +1,21 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxVectorField.h"
-#include "Particle.h"
+#include "vectorField.h"
+#include "particle.h"
+#include "ofxGui.h"
+#include <stdlib.h>
+#include <math.h>
 
 class ofApp : public ofBaseApp{
-
 	public:
 		void setup();
 		void update();
 		void draw();
-		void resetParticles();
-		void resetPath();
-		void resetField();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
-		void mouseMoved(int x, int y );
+		void mouseMoved(int x, int y);
 		void mouseDragged(int x, int y, int button);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
@@ -26,13 +25,17 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-    ofxVectorField vectorField;
-    int width = 720;
-    int height = 480;
-		int factor = 10; //affects num particles so 10 would be 720/10 * 480/10
-		bool showParticles = true;
-		bool showField = false;
+		VectorField vectorField;
+    vector<Particle *> particles;
+		ofImage img; //for screenshots
 
-    vector <Particle> particles;
-		vector <ofPath> paths;
+		// int maxParticles = 20000;
+	private:
+		void addNewParticle(float x, float y);
+		void addNewParticles(float x, float y);
+
+		ofxIntSlider maxParticles;
+		ofxIntSlider brushRadius;
+		ofxIntSlider brushThickness;
+		ofxPanel gui;
 };

@@ -1,121 +1,71 @@
 #include "ofApp.h"
 
+void ofApp::addNewParticle(float x, float y){
+  Particle * newParticle = new Particle(glm::vec2(x,y));
+  particles.push_back(newParticle);
+  // newParticle->setup(glm::vec2(x,y));
+}
+void ofApp::addNewParticles(float x, float y){
+
+  addNewParticle(x, y);
+  int thickness = 20/brushThickness;
+  for (int i = -brushRadius; i < brushRadius; i +=thickness){
+    for (int j = -brushRadius; j < brushRadius; j +=thickness){
+      if(sqrt(pow(i, 2) + pow(j, 2)) < brushRadius){
+        addNewParticle(x+i, y +j);
+      }
+    }
+  }
+
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofEnableAlphaBlending();
-
-    ofSetWindowShape(width, height);
-
-    ofSetFrameRate(30);
-
-    resetField();
-
-    for(int i =0; i < (width)/factor; i++){
-      for(int j =0; j < (height)/factor; j++){
-        Particle newParticle;
-        glm::vec2 pos(ofRandom( 0, ofGetWidth()), ofRandom( 0, ofGetHeight()));
-        // glm::vec2 pos(i*factor, j*factor);
-        newParticle.setup(pos);
-        particles.push_back(newParticle);
-        ofPath newPath;
-        newPath.draw(pos.x, pos.y);
-        newPath.setStrokeColor( ofColor ( 255 , 255 , 255, 20 ) );
-    		newPath.setFilled(false);
-    		newPath.setStrokeWidth(0.01);
-    		newPath.setCurveResolution(20);
-        paths.push_back(newPath);
-      }
-  }
+  gui.setup();
+  gui.add(maxParticles.setup("max particles", 100, 10, 20000));
+  gui.add(brushRadius.setup("brush radius", 1, 5, 50));
+  gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
+  vectorField.setup(ofGetWidth(),ofGetHeight(),1);
+  vectorField.perlin();
 }
-
-void ofApp::resetParticles(){
-
-
-      for( int i=0; i<particles.size(); i++){
-        particles[i].pos = particles[i].startPos;
-        particles[i].duration = 0;
-      }
-}
-void ofApp::resetPath(){
-
-
-      for( int i=0; i<particles.size(); i++){
-        paths[i].clear();
-        // particles[i].pos = particles[i].startPos;
-      }
-}
-void ofApp::resetField(){
-
-  // allocate the vector field with the desired spacing
-  vectorField.setup(width, height, 2);
-
-  // create the vector field using perlin noise
-  vectorField.randomize();
-  // adjust the vector field by normalizing, scaling, biasing & blurring (to make it look nice)
-  // vectorField.normalize();
-  vectorField.scale(5);
-  // vectorField.bias(0, 1);
-  // vectorField.blur();
-}
-
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+    while(particles.size() > maxParticles){
+      particles.erase(particles.begin());
+    }
 
     for( int i=0; i<particles.size(); i++){
-
-        // particles[i].stayOnScreen();
-        // if(!particles[i].isDead()){
-          // glm::vec2 pos(ofRandom( 0, ofGetWidth()), ofRandom( 0, ofGetHeight()));
-          // particles[i].pos = pos;
-          particles[i].move(vectorField.getVectorInterpolated(particles[i].pos.x, particles[i].pos.y, ofGetWidth(), ofGetHeight()));
-        // }
+      glm::vec2 pos = particles[i]->pos;
+      glm::vec2 dir = vectorField.getVector(pos.x, pos.y);
+      particles[i]->move(dir);
     }
+
+    std::string title = std::to_string(ofGetFrameRate());
+    std::string s = std::to_string(particles.size());
+    std::string ss = " : ";
+    title.append(ss);
+    title.append(s);
+    ofSetWindowTitle(title);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0, 0, 0);
-
-    ofSetColor(255, 255, 255);
-
-    if(showField){
-      vectorField.draw();
-    }
-    string s = "SPACE: clear paths\nr: reset field\nt: reset particles\np: toggle particles\nf: toggle field";
-	  ofDrawBitmapString(s, 20, 20);
-
-    for( int i=0; i<particles.size(); i++){
-        if(!particles[i].isDead()){
-          if(particles[i].pos.x >= 2 && particles[i].pos.y >= 2){
-            //dirty check to avoid unnatural line artefacts at 0,0
-            paths[i].curveTo(particles[i].pos.x, particles[i].pos.y);
-          }
-          if(showParticles){
-            particles[i].draw();
-          }
-      }
-      paths[i].draw();
-    }
+  // vectorField.draw();
+  gui.draw();
+  for( int i=0; i<particles.size(); i++){
+    particles[i]->draw();
+  }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if( key == ' '){
-    resetPath();
+    vectorField.perlin();
   }
-  else if (key == 'r'){
-    resetField();
-  }
-  else if (key == 't'){
-    resetParticles();
-  }
-  else if (key == 'p'){
-    showParticles = !showParticles;
-  }
-  else if (key == 'f'){
-    showField = !showField;
+  if(key == 'x'){
+      img.grabScreen(0, 0 , ofGetWidth(), ofGetHeight());
+      img.save("screenshot.jpg");
   }
 }
 
@@ -125,18 +75,21 @@ void ofApp::keyReleased(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
+void ofApp::mouseMoved(int x, int y){
 
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+  // for(int i =-50; i < 50; i ++){
+  //   addNewParticle(x+i,y+i);
+  // }
+  addNewParticles(x,y);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+  addNewParticles(x,y);
 }
 
 //--------------------------------------------------------------
