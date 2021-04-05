@@ -18,10 +18,23 @@ class MainScene : public BaseScene{
   private:
     void addNewParticle(float x, float y);
     void addNewParticles(float x, float y);
+    void loadVectorField();
+    void toggleVectorField();
 
-    ofxIntSlider maxParticles;
+    bool loading = false;
+    bool showField = false;
+
     ofxIntSlider brushRadius;
     ofxIntSlider brushThickness;
+
+    ofxGuiGroup particleGroup;
+    ofxIntSlider maxParticles;
+    ofxIntSlider avgLineWidth;
+    ofxIntSlider particleOpacity;
+
+    ofxGuiGroup vectorFieldGroup;
+    ofxButton loadVectorFieldButton;
+    ofxButton toggleVectorFieldButton;
     ofxPanel gui;
 
 };

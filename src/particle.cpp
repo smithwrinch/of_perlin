@@ -7,20 +7,36 @@ Particle::Particle(glm::vec2 p, float s, float swidth){
   speed = s;
   // ofSetBackgroundAuto(false);
   path.draw(pos.x, pos.y);
-  path.setStrokeColor( ofColor ( 255 , 255 , 255, 20 ) );
+  path.setStrokeColor(colour);
   path.setFilled(false);
   path.setStrokeWidth(swidth);
   path.setCurveResolution(1);
 }
 Particle::~Particle(){
     path.clear();
+    delete [] &colour;
     delete [] &path;
 }
 
+
+void Particle::setColour(int r, int g, int b, int a){
+  colour.r = r;
+  colour.g = g;
+  colour.b = b;
+  colour.a = a;
+  path.setStrokeColor(colour);
+}
+
+void Particle::setOpacity(int a){
+  colour.a = a;
+  path.setStrokeColor(colour);
+}
+
+
 void Particle::move(glm::vec2 dir){
 
-    if(!dead){
-      if(glm::length(dir) > 0.1){
+    if(!isDead()){
+      if(glm::length(dir) > 0.02){
         pos += dir*speed;
         path.curveTo(pos.x, pos.y);
       }

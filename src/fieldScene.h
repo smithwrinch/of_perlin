@@ -18,12 +18,13 @@ class FieldScene : public BaseScene{
 		VectorField vectorField;
 
   private:
-    int state = 0;
+    bool loading = false;
+    int minSpacing = 1; //to prevent loaded fields with high spacing crashing
     void saveField();
     void loadField();
     void perlin();
     void randomise();
-    void applyDims();
+    void reset();
 
 // panels
     ofxPanel gui;
@@ -38,7 +39,8 @@ class FieldScene : public BaseScene{
     ofxButton saveButton;
     ofxButton loadButton;
     ofxTextField saveText;
-    ofxTextField loadText;
+    ofxButton resetButton;
+    // ofxTextField loadText;
 
 
 // perlin gui

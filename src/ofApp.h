@@ -6,6 +6,7 @@
 #include "fieldScene.h"
 #include "baseScene.h"
 
+
 class ofApp : public ofBaseApp{
 	public:
 
@@ -13,7 +14,7 @@ class ofApp : public ofBaseApp{
 		BaseScene * currentScene;
 		MainScene mainScene;
 		FieldScene fieldScene;
-		
+
 		void setup();
 		void update();
 		void draw();

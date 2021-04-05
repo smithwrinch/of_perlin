@@ -8,6 +8,8 @@ public:
     ~Particle();
 
     // void setup(glm::vec2 startPos);
+    void setColour(int r, int g, int b, int a);
+    void setOpacity(int a);
     void move(glm::vec2 dir);
     void draw();
     void stayOnScreen();
@@ -22,5 +24,6 @@ public:
     float speed;
 
     ofPath path;
+    ofColor colour = ofColor ( 255 , 255 , 255, 20 ) ;
 
 };
