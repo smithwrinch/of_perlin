@@ -10,7 +10,7 @@ void FieldScene::setup(){
 
 
   gui.add(saveGroup.setup("save/load"));
-  saveGroup.add(saveText.setup("save.xml", "s"));
+  saveGroup.add(saveText.setup("enter fname here", "s"));
   saveGroup.add(saveButton.setup("save field"));
   saveButton.addListener(this, &FieldScene::saveField);
   // saveGroup.add(loadText.setup("load.xml", "s"));
@@ -21,7 +21,7 @@ void FieldScene::setup(){
   gui.add(perlinGui.setup("perlin"));
   // perlinButton.addListener(this, &FieldScene::perlin);
 
-  perlinGui.add(perlinSpacing.setup("spacing", 0.0001, 0.0005, 0.01));
+  perlinGui.add(perlinSpacing.setup("spacing", 0.0001, 0.0005, 0.1));
   perlinGui.add(randomiseButton.setup("randomly generate"));
   randomiseButton.addListener(this, &FieldScene::randomise);
   // perlinGui.add(backButton.setup("go back"));
@@ -53,10 +53,7 @@ void FieldScene::reset(){
   // TODO: add vector field reset
   // add vector field normalise
   // add affordance st can just get vf from other window without loading
-  // make line width do something
-  // add vector field functionality to affect line width
-  // add particle lifetime as parameter
-  // add colour pickers
+  // add perlin generation parameters
 }
 
 void FieldScene::randomise(){

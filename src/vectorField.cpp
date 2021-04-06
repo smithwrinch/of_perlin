@@ -7,8 +7,10 @@ VectorField::~VectorField(){
   delete [] field;
 }
 
-void VectorField::setup(float s){
+void VectorField::setup(float s, float oX, float oY){
   spacing = s;
+  offX = oX;
+  offY = oY;
   width = WIDTH/s;
   height = HEIGHT/s;
   field = new glm::vec2[width*height];
@@ -24,10 +26,10 @@ void VectorField::draw(){
 
   	for(int y=0; y<height; y+=2){
   		for(int x=0; x<width; x+=2){
-
+        
   			int pos = y * width + x;
-  			int startX = x * spacing;
-  			int startY = y * spacing;
+  			int startX = x * spacing + offX;
+  			int startY = y * spacing + offY;
 
         ofDrawLine(startX, startY, startX+field[pos].x*spacing, startY+field[pos].y*spacing);
   		}
@@ -89,6 +91,8 @@ glm::vec2 VectorField::getVector(float x, float y){
   //   return glm::vec2(0,0);
   // }
   glm::vec2 newVector(0);
+  x -= offX;
+  y -= offY;
 
 	float pctX = float(x)/WIDTH;
 	float pctY = float(y)/HEIGHT;

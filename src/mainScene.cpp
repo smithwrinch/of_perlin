@@ -1,10 +1,12 @@
 #include "mainScene.h"
 
 void MainScene::addNewParticle(float x, float y){
-  Particle * newParticle = new Particle(glm::vec2(x,y));
-  newParticle->setOpacity(particleOpacity);
+  Particle * newParticle = new Particle(glm::vec2(x,y), particleSpeed, avgLineWidth, particleLifetime);
+  newParticle->setColour(particleColour.get().r, particleColour.get().g, particleColour.get().b);
+  newParticle->setOpacity(particleColour.get().a);
+  newParticle->setTrailColour(particleTrailColour.get().r, particleTrailColour.get().g, particleTrailColour.get().b);
+  newParticle->setTrailOpacity(particleTrailColour.get().a);
   particles.push_back(newParticle);
-  // newParticle->setup(glm::vec2(x,y));
 }
 
 void MainScene::addNewParticles(float x, float y){
@@ -33,40 +35,89 @@ void MainScene::loadVectorField(){
   }
 }
 
-void MainScene::toggleVectorField(){
+void MainScene::toggleVectorField(bool & value){
   showField = !showField;
 }
+void MainScene::clearParticles(){
+  particles.clear();
+}
+
+
+void MainScene::saveImage(){
+  screenshotting = true;
+  MainScene::screenshot(&img);
+  screenshotting = false;
+}
+
+void MainScene::screenshot(ofImage * img){
+  BaseScene::screenshot(img);
+}
+// bool MainScene::toggleParticle(){
+//   return true;
+// }
+// bool MainScene::toggleParticleTrail(){
+//   return true;
+// }
 
 void MainScene::setup(){
   id = 1;
-  gui.setup();
+  gui.setup("(g) to toggle");
   gui.add(brushRadius.setup("brush radius", 1, 5, 100));
   gui.add(brushThickness.setup("brush thickness", 1, 1, 50));
-  gui.add(particleOpacity.setup("brush opacity", 20, 1, 255));
+  gui.add(resetButton.setup("clear (c)"));
+  resetButton.addListener(this, &MainScene::clearParticles);
+  gui.add(saveImageButton.setup("save image (x)"));
+  saveImageButton.addListener(this, &MainScene::saveImage);
 
   gui.add(particleGroup.setup("particles"));
-  particleGroup.add(maxParticles.setup("max particles", 100, 10, 50000));
-  particleGroup.add(avgLineWidth.setup("average line width", 1, 1, 50));
+  particleGroup.add(maxParticles.setup("max particles", 100, 0, 50000));
+  particleGroup.add(particleLifetime.setup("particle lifetime", 0, 0, 5));
+  particleGroup.add(particleSpeed.setup("particle speed", 10, 0, 20));
+  particleGroup.add(showParticleButton.setup("show particle", true));
+  particleGroup.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
+
+  particleGroup.add(showTrailButton.setup("show particle path", true));
+  particleGroup.add(avgLineWidth.setup("particle path width", 1, 1, 10));
+  particleGroup.add(particleTrailColour.set("particle path color", ofColor(255, 255, 255, 20)));
 
   gui.add(vectorFieldGroup.setup("vector field"));
-  gui.add(loadVectorFieldButton.setup("load main"));
-  gui.add(toggleVectorFieldButton.setup("toggle field"));
+  gui.add(loadVectorFieldButton.setup("load main (l)"));
+  gui.add(toggleVectorFieldButton.setup("toggle field (f)", false));
   loadVectorFieldButton.addListener(this, &MainScene::loadVectorField);
   toggleVectorFieldButton.addListener(this, &MainScene::toggleVectorField);
 
+  // fbo.allocate(1080, 800, GL_RGBA, 12);
+
   vectorField.setup(3);
   vectorField.perlin(0.0077);
+
+
 }
 void MainScene::draw(){
-  if(!loading){
-    gui.draw();
-  }
   if(showField){
     vectorField.draw();
   }
+  // fbo.begin();
+  // ofClear(255,255,255, 0);
+
   for( int i=0; i<particles.size(); i++){
-    particles[i]->draw();
+    if(showParticleButton){
+      particles[i]->draw();
+    }
+    if(showTrailButton){
+      particles[i]->drawTrail();
+    }
   }
+  if(!screenshotting){
+    ofNoFill();
+    ofDrawCircle(ofGetMouseX(), ofGetMouseY(), brushRadius);
+    ofFill();
+    if(guiOn){
+      gui.draw();
+    }
+  }
+  // fbo.end();
+  // fbo.draw(0,0);
 }
 void MainScene::update(){
   while(particles.size() > maxParticles){
@@ -74,7 +125,7 @@ void MainScene::update(){
   }
 
   for( int i=0; i<particles.size(); i++){
-    glm::vec2 pos = particles[i]->pos;
+    glm::vec2 pos = particles[i]->getPosition();
     glm::vec2 dir = vectorField.getVector(pos.x, pos.y);
     particles[i]->move(dir);
   }
@@ -94,4 +145,24 @@ void MainScene::mouseDragged(int x, int y){
 //--------------------------------------------------------------
 void MainScene::mousePressed(int x, int y){
   addNewParticles(x,y);
+}
+
+//--------------------------------------------------------------
+void MainScene::keyPressed(int key){
+  cout << key << "\n";
+   switch (key){
+     case 'f':
+      cout << "hasdfhjksdf" << "\n";
+      toggleVectorField(showField);
+     break;
+     case 'c':
+      clearParticles();
+     break;
+     case 'l':
+      loadVectorField();
+     break;
+     case 'g':
+      guiOn = !guiOn;
+     break;
+   }
 }

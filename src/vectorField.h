@@ -4,14 +4,14 @@
 #include <fstream>
 
 #define WIDTH 1024
-#define HEIGHT 800
+#define HEIGHT 1024
 
 class VectorField {
   public:
     VectorField();
     ~VectorField();
 
-    void setup(float spacing);
+    void setup(float spacing, float offX=300, float offY = 20);
 
     void draw();
     void perlin(float spacing=0.0077);
@@ -33,6 +33,8 @@ class VectorField {
      int spacing;
      int width;
      int height;
+     float offX;
+     float offY;
      // for saving
      ofxXmlSettings settings;
 

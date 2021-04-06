@@ -7,6 +7,7 @@ void ofApp::setup(){
   fieldScene.setup();
   fieldScene.setID(2);
   currentScene = &mainScene;
+  ofSetEscapeQuitsApp(true);
 }
 
 //--------------------------------------------------------------
@@ -29,9 +30,9 @@ void ofApp::keyPressed(int key){
       currentScene = &mainScene;
     }
   }
+  currentScene->keyPressed(key);
   if(key == 'x'){
-      img.grabScreen(0, 0 , ofGetWidth(), ofGetHeight());
-      img.save("screenshot.jpg");
+    currentScene->screenshot(&img);
   }
 }
 
@@ -42,7 +43,6 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
-
 }
 
 //--------------------------------------------------------------

@@ -14,11 +14,20 @@ class BaseScene{
     int id;
     virtual int getID(){
       return id;
-    };
+    }
     virtual void setID(int i){
       id = i;
     }
-		// virtual void keyPressed(int key);
+		virtual void screenshot(ofImage* img){
+	    string imgPath = "0.jpg";
+	    img->grabScreen( 0, 0, ofGetWidth(), ofGetHeight() );
+	    ofPixels & pixels = img->getPixels();
+	    pixels.swapRgb();   // fix inverted R and B channels
+	    ofSaveImage(pixels, imgPath, OF_IMAGE_QUALITY_BEST);
+	    img->clear();
+	    pixels.clear();
+		};
+		virtual void keyPressed(int key){};
 		// virtual void keyReleased(int key);
 		// virtual void mouseMoved(int x, int y);
 		virtual void mouseDragged(int x, int y){};
