@@ -10,7 +10,8 @@ class FieldScene : public BaseScene{
     void setup();
     void update();
     void draw();
-
+    void setVectorField(VectorField * field);
+    VectorField* getVectorField();
 		// void mouseDragged(int x, int y){};
 		// void mousePressed(int x, int y){};
     int id = 2;
@@ -24,7 +25,10 @@ class FieldScene : public BaseScene{
     void loadField();
     void perlin();
     void randomise();
+    void normalise();
     void reset();
+    void sendToMain();
+    void goToMain();
 
 // panels
     ofxPanel gui;
@@ -39,7 +43,10 @@ class FieldScene : public BaseScene{
     ofxButton saveButton;
     ofxButton loadButton;
     ofxTextField saveText;
+    ofxButton normaliseButton;
     ofxButton resetButton;
+    ofxButton sendToMainButton;
+    ofxButton goToMainButton;
     // ofxTextField loadText;
 
 
@@ -47,8 +54,8 @@ class FieldScene : public BaseScene{
 
     ofxGuiGroup perlinGui;
     ofxButton randomiseButton;
-    ofxButton backButton;
     ofxFloatSlider perlinSpacing;
-    ofxFloatSlider perlinParameter;
+    ofxIntSlider perlinParameterX;
+    ofxIntSlider perlinParameterY;
 
 };

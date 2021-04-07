@@ -12,12 +12,18 @@ class BaseScene{
 		virtual void update(){};
 		virtual void draw(){};
     int id;
+		VectorField vectorField;
     virtual int getID(){
       return id;
     }
     virtual void setID(int i){
       id = i;
     }
+		virtual void setVectorField(VectorField* field){
+		}
+		virtual VectorField * getVectorField(){
+			return &vectorField;
+		}
 		virtual void screenshot(ofImage* img){
 	    string imgPath = "0.jpg";
 	    img->grabScreen( 0, 0, ofGetWidth(), ofGetHeight() );

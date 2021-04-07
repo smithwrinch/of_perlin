@@ -13,7 +13,7 @@ void VectorField::setup(float s, float oX, float oY){
   offY = oY;
   width = WIDTH/s;
   height = HEIGHT/s;
-  field = new glm::vec2[width*height];
+  field = new glm::vec2[WIDTH*HEIGHT];
 	// glPopMatrix();
 }
 
@@ -26,20 +26,27 @@ void VectorField::draw(){
 
   	for(int y=0; y<height; y+=2){
   		for(int x=0; x<width; x+=2){
-        
+
   			int pos = y * width + x;
   			int startX = x * spacing + offX;
   			int startY = y * spacing + offY;
 
-        ofDrawLine(startX, startY, startX+field[pos].x*spacing, startY+field[pos].y*spacing);
-  		}
+        float endX = startX+field[pos].x*spacing;
+        float endY = startY+field[pos].y*spacing;
+
+        ofDrawLine(startX, startY, endX, endY);
+
+        // for arrow head
+        //
+        ofDrawCircle(endX, endY, spacing*0.3);
+
+      }
   	}
 
   	// glPopMatrix();
 }
-void VectorField::perlin(float s){
-  	float t1 = ofRandom(0,30);
-  	float t2 = ofRandom(0,30);
+void VectorField::perlin(float s, float t1, float t2){
+
   	// float spacing = s;
 
   	int numVectors = width * height;
@@ -69,6 +76,18 @@ void VectorField::uniform(glm::vec2 u){
 
 }
 
+void VectorField::normalise(){
+  for(int i=0; i<width*height; i++){
+      if(field[i].x == 0){
+        field[i].x += 0.0001; //to prevent NaN on normalisation
+      }
+      if(field[i].y == 0){
+        field[i].y += 0.0001;
+      }
+     field[i] = glm::normalize(field[i]);
+  }
+}
+
 void VectorField::setSpacing(float s){
   spacing = s;
   // setWidth(WIDTH/s);
@@ -76,6 +95,7 @@ void VectorField::setSpacing(float s){
   width = WIDTH/s;
   height = HEIGHT/s;
 }
+
 
 // void VectorField::setWidth(int w){
 //   width = w;
@@ -161,6 +181,13 @@ void VectorField::save(string fname){
 
 }
 
+void VectorField::copy(VectorField* vf){
+  setSpacing(vf->spacing);
+  for (int i =0; i < width*height; i++){
+    field[i].x = vf->field[i].x;
+    field[i].y = vf->field[i].y;
+  }
+}
 
 int VectorField::loadFromFile(string fname){
 
@@ -168,7 +195,7 @@ int VectorField::loadFromFile(string fname){
   newfile.open(fname,ios::in); //open a file to perform read operation using file object
   if (newfile.is_open()){   //checking whether the file is open
 
-    delete [] field;
+    // delete [] field;
     // field = new glm::vec2[width*height];
     string tp;
     int i = 0;
@@ -187,7 +214,7 @@ int VectorField::loadFromFile(string fname){
          case 2:
           height = std::stof(tp);
           cout << std::stof(tp) << "\n";
-          field = new glm::vec2[width*height];
+          // field = new glm::vec2[width*height];
           break;
          default:
            if(i % 2 == 0){

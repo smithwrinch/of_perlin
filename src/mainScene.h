@@ -7,6 +7,8 @@ class MainScene : public BaseScene{
     void update();
     void draw();
 
+
+    VectorField * getVectorField();
     void keyPressed(int key);
 		void mouseDragged(int x, int y);
 		void mousePressed(int x, int y);
@@ -24,6 +26,7 @@ class MainScene : public BaseScene{
     void toggleVectorField(bool & value);
     void clearParticles();
     void saveImage();
+    void createVectorField();
     bool toggleParticle();
     bool toggleParticleTrail();
 
@@ -53,6 +56,7 @@ class MainScene : public BaseScene{
     ofxGuiGroup vectorFieldGroup;
     ofxButton loadVectorFieldButton;
     ofxToggle toggleVectorFieldButton;
+    ofxButton createVectorFieldButton;
     ofxPanel gui;
 
 };

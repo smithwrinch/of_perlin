@@ -71,8 +71,8 @@ void MainScene::setup(){
 
   gui.add(particleGroup.setup("particles"));
   particleGroup.add(maxParticles.setup("max particles", 100, 0, 50000));
-  particleGroup.add(particleLifetime.setup("particle lifetime", 0, 0, 5));
-  particleGroup.add(particleSpeed.setup("particle speed", 10, 0, 20));
+  particleGroup.add(particleLifetime.setup("particle lifetime", 0, 0, 20));
+  particleGroup.add(particleSpeed.setup("particle speed", 10, 0, 10));
   particleGroup.add(showParticleButton.setup("show particle", true));
   particleGroup.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
 
@@ -83,8 +83,10 @@ void MainScene::setup(){
   gui.add(vectorFieldGroup.setup("vector field"));
   gui.add(loadVectorFieldButton.setup("load main (l)"));
   gui.add(toggleVectorFieldButton.setup("toggle field (f)", false));
+  gui.add(createVectorFieldButton.setup("create field (a)"));
   loadVectorFieldButton.addListener(this, &MainScene::loadVectorField);
   toggleVectorFieldButton.addListener(this, &MainScene::toggleVectorField);
+  createVectorFieldButton.addListener(this, &MainScene::createVectorField);
 
   // fbo.allocate(1080, 800, GL_RGBA, 12);
 
@@ -136,6 +138,14 @@ void MainScene::update(){
   title.append(ss);
   title.append(s);
   ofSetWindowTitle(title);
+}
+
+VectorField * MainScene::getVectorField(){
+  return &vectorField;
+}
+
+void MainScene::createVectorField(){
+  BaseScene::setID(-3);
 }
 
 void MainScene::mouseDragged(int x, int y){

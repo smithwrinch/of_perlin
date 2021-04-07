@@ -12,6 +12,23 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    if(currentScene->getID() < 0){
+      switch (currentScene->getID()) {
+        case -1:
+          currentScene->setID(2);
+          currentScene = &mainScene;
+        break;
+        case -2:
+          mainScene.getVectorField()->copy(currentScene->getVectorField());
+          currentScene->setID(2);
+          currentScene = &mainScene;
+          break;
+        case -3:
+          currentScene->setID(1);
+          currentScene = &fieldScene;
+          break;
+      }
+    }
     currentScene->update();
 }
 

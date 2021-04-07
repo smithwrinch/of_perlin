@@ -4,16 +4,13 @@ void FieldScene::setup(){
   gui.setup();
   // gui.add(width.setup("width", ofGetWidth(), 1, ofGetWidth()));
   // gui.add(height.setup("height", ofGetHeight(), 1, ofGetHeight()));
-  // gui.add(dimsButton.setup("Apply dimensions"));
-  // dimsButton.addListener(this, &FieldScene::applyDims);
-  gui.add(spacing.setup("spacing", 1, 1, 10));
+  gui.add(spacing.setup("scale", 6, 1, 10));
 
 
   gui.add(saveGroup.setup("save/load"));
   saveGroup.add(saveText.setup("enter fname here", "s"));
   saveGroup.add(saveButton.setup("save field"));
   saveButton.addListener(this, &FieldScene::saveField);
-  // saveGroup.add(loadText.setup("load.xml", "s"));
   saveGroup.add(loadButton.setup("load field"));
   loadButton.addListener(this, &FieldScene::loadField);
 
@@ -21,11 +18,24 @@ void FieldScene::setup(){
   gui.add(perlinGui.setup("perlin"));
   // perlinButton.addListener(this, &FieldScene::perlin);
 
-  perlinGui.add(perlinSpacing.setup("spacing", 0.0001, 0.0005, 0.1));
-  perlinGui.add(randomiseButton.setup("randomly generate"));
+  perlinGui.add(perlinSpacing.setup("scale", 0.0578648, 0.0005, 0.1));
+  perlinGui.add(perlinParameterX.setup("x parameter", 10, 0, 100));
+  perlinGui.add(perlinParameterY.setup("y parameter", 10, 0, 100));
+
+  perlinGui.add(randomiseButton.setup("generate"));
   randomiseButton.addListener(this, &FieldScene::randomise);
   // perlinGui.add(backButton.setup("go back"));
   // backButton.addListener(this, &FieldScene::goBack);
+
+
+  gui.add(normaliseButton.setup("normalise"));
+  normaliseButton.addListener(this, &FieldScene::normalise);
+  gui.add(resetButton.setup("reset"));
+  resetButton.addListener(this, &FieldScene::reset);
+  gui.add(sendToMainButton.setup("send to main"));
+  sendToMainButton.addListener(this, &FieldScene::sendToMain);
+  gui.add(goToMainButton.setup("go back to main (a)"));
+  goToMainButton.addListener(this, &FieldScene::goToMain);
 
   vectorField.setup(1);
   vectorField.uniform(glm::vec2(1,1));
@@ -41,27 +51,45 @@ void FieldScene::loadField(){
   ofFileDialogResult result = ofSystemLoadDialog("Load file");
   if(result.bSuccess) {
     string path = result.getPath();
+
+    cout << path << "\n";
     // load your file at `path`
     minSpacing = vectorField.loadFromFile(path);
-    spacing.setMin(minSpacing);
+    // spacing.setMin(minSpacing);
     loading = false;
     cout << "loaded" << "\n";
+    cout << spacing << "\n";
+
   }
 }
 
+void FieldScene::sendToMain(){
+  cout << "Sending to main scene" << "\n";
+  BaseScene::setID(-2);
+}
+
+void FieldScene::goToMain(){
+  cout << "Going to main scene" << "\n";
+  BaseScene::setID(-1);
+  cout << BaseScene::getID() << "\n";
+}
+
 void FieldScene::reset(){
-  // TODO: add vector field reset
-  // add vector field normalise
-  // add affordance st can just get vf from other window without loading
-  // add perlin generation parameters
+  vectorField.setSpacing(1);
+  vectorField.uniform(glm::vec2(1,0));
+  minSpacing = 1;
+}
+
+void FieldScene::normalise(){
+  vectorField.normalise();
 }
 
 void FieldScene::randomise(){
-  vectorField.perlin(perlinSpacing);
+  vectorField.perlin(perlinSpacing, perlinParameterX, perlinParameterY);
 }
 
 void FieldScene::update(){
-  ofSetWindowTitle("Create Vector");
+  ofSetWindowTitle("Vector Field Creator");
 
   vectorField.setSpacing(spacing);
 }
@@ -71,4 +99,13 @@ void FieldScene::draw(){
     if(!loading){
       gui.draw();
     }
+}
+
+
+VectorField * FieldScene::getVectorField(){
+  return &vectorField;
+}
+
+void FieldScene::setVectorField(VectorField * field){
+  vectorField = *field;
 }
