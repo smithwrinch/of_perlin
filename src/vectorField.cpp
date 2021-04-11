@@ -1,5 +1,13 @@
 #include "vectorField.h"
 
+/*
+TODO:
+- add vector field from image
+- add perlin noise effect on generation (possibly)
+- fix screenshot
+- look into possibility of video
+*/
+
 VectorField::VectorField(){
 
 }
@@ -14,6 +22,11 @@ void VectorField::setup(float s, float oX, float oY){
   width = WIDTH/s;
   height = HEIGHT/s;
   field = new glm::vec2[WIDTH*HEIGHT];
+
+  // Instantiate expression and register symbol_table
+  expressionX.register_symbol_table(symbol_table);
+  expressionY.register_symbol_table(symbol_table);
+
 	// glPopMatrix();
 }
 
@@ -34,11 +47,23 @@ void VectorField::draw(){
         float endX = startX+field[pos].x*spacing;
         float endY = startY+field[pos].y*spacing;
 
-        ofDrawLine(startX, startY, endX, endY);
+        float dX = endX - startX;
+        float dY = endY - startY;
+
+        float dist = sqrt(pow(dX, 2) + pow(dY, 2));
+
+
+        if(dist > spacing){
+          ofSetColor(255 - dist*spacing, 255 - dist*spacing, 255);
+          dX /= dist/spacing;
+          dY /= dist/spacing;
+        }
+
+        ofDrawLine(startX, startY, dX + startX, dY + startY);
 
         // for arrow head
         //
-        ofDrawCircle(endX, endY, spacing*0.3);
+        // ofDrawCircle(endX, endY, spacing*0.3);
 
       }
   	}
@@ -76,17 +101,228 @@ void VectorField::uniform(glm::vec2 u){
 
 }
 
-void VectorField::normalise(){
+void VectorField::normalise(float scalar){
   for(int i=0; i<width*height; i++){
-      if(field[i].x == 0){
-        field[i].x += 0.0001; //to prevent NaN on normalisation
-      }
-      if(field[i].y == 0){
-        field[i].y += 0.0001;
-      }
-     field[i] = glm::normalize(field[i]);
+    normalise(i);
+    if(scalar == 1) continue;
+    field[i].x /= scalar;
+    field[i].y /= scalar;
   }
 }
+
+void VectorField::normalise(int i){
+    if(field[i].x == 0){
+      field[i].x += 0.0001; //to prevent NaN on normalisation
+    }
+    if(field[i].y == 0){
+      field[i].y += 0.0001;
+    }
+   field[i] = glm::normalize(field[i]);
+}
+
+
+void VectorField::setVector(string eqnX, string eqnY, double x, double y, int brushRadius){
+
+  exprtk::parser<double> parser;
+  for(int i=0; i<width*height; i++){
+  	double xPos = i % width;
+  	double yPos = i / width;
+
+    if( i % 1000 == 0){
+      cout << (i *100/(width*height)) << "% remaining" << "\n";
+    }
+
+    // Register x with the symbol_table
+
+     symbol_table.remove_variable("x");
+     symbol_table.remove_variable("y");
+     symbol_table.add_variable("x",xPos);
+     symbol_table.add_variable("y",yPos);
+
+
+     // Instantiate parser and compile the expression
+
+     if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+       cout << "error: bad equation" << "\n";
+       return;
+     };
+
+     double resultX = 0.0;
+     double resultY = 0.0;
+
+     // Evaluate and print result
+     resultX = expressionX.value();
+     // printf("Result1: %10.5f\n",resultX);
+     resultY = expressionY.value();
+     // printf("Result1: %10.5f\n",resultY);
+     field[i].x = float(resultX);
+     field[i].y = float(resultY);
+   }
+
+}
+
+
+void VectorField::addMagnet(float x, float y, int brushRadius, float strength){
+  for(int i=0; i<width*height; i++){
+
+    int w = i % width;
+    int h = i / width;
+    float xPos = w * spacing + offX;
+    float yPos = h * spacing + offY;
+
+    float xVal = field[i].x;
+    float yVal = field[i].y;
+
+    float dirX = xPos - x;
+    float dirY = yPos - y;
+
+    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+
+    if(dist > brushRadius && brushRadius !=0){ //outside cricle
+      continue;
+    }
+
+    if(dirX == 0){
+      dirX = 0.001;
+    }
+    float theta = atan(dirY / dirX);
+
+    if(dist == 0){
+      dist = 0.001;
+    }
+
+    float r = (strength*500/(dist*dist));
+
+    float newX = r*cos(theta);
+    float newY = r*sin(theta);
+
+    xVal += newX;
+    yVal += newY;
+
+    field[i].x = xVal;//*(effect);
+    field[i].y = yVal;//*(effect);
+    float newdist = sqrt(pow(xVal, 2) + pow(yVal, 2));
+    if(newdist > 1){
+      normalise(i);
+    }
+
+  }
+}
+
+void VectorField::addSink(float x, float y, int brushRadius, float strength){
+  for(int i=0; i<width*height; i++){
+    //
+    int w = i % width;
+    int h = i / width;
+    float xPos = w * spacing + offX;
+    float yPos = h * spacing + offY;
+    float dirX = xPos - x;
+    float dirY = yPos - y;
+    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    if(dist > brushRadius && brushRadius !=0){ //inside cricle
+      continue;
+    }
+
+    if(dist == 0){
+      dist = 0.001;
+    }
+
+    float outX = -(strength)*(dirX)/dist;
+    float outY = -(strength)*(dirY)/dist;
+    if(brushRadius !=0){
+      outX *= (1 - dist/brushRadius);
+      outY *= (1 - dist/brushRadius);
+    }
+    field[i].x += outX;
+    field[i].y += outY;
+
+  }
+  // normalise();
+}
+
+
+void VectorField::setFromImage(ofImage & image){
+
+    int imgW = image.getWidth();
+    int imgH = image.getHeight();
+	  int imgPixelCount = imgW * imgH;
+
+
+	// storage for brightness
+	unsigned char * imagePixels = image.getPixels().getData();
+	unsigned char* brightness = new unsigned char[imgPixelCount];
+
+	if( image.getPixels().getImageType() == OF_IMAGE_GRAYSCALE){
+
+		for(int x=0; x<imgW; x++){
+			for(int y=0; y<imgH; y++){
+
+				int srcPos = y * imgW + x;
+
+				unsigned char b = imagePixels[srcPos];
+
+				brightness[srcPos] = b;
+			}
+		}
+
+	} else {
+
+		// convert RGB to luma
+		unsigned char * imagePixels = image.getPixels().getData();
+		unsigned char* brightness = new unsigned char[imgPixelCount];
+		int bpp = image.getPixels().getBytesPerPixel();
+
+		for(int x=0; x<imgW; x++){
+			for(int y=0; y<imgH; y++){
+
+				int dstPos = y * imgW + x;
+				int srcPos = dstPos * 3;
+
+				unsigned char r = imagePixels[srcPos];
+				unsigned char g = imagePixels[srcPos+1];
+				unsigned char b = imagePixels[srcPos+2];
+
+				brightness[dstPos] = ( r * 0.299) + (.587 * g) + (.114 * b);
+			}
+		}
+	}
+
+	// detetermine the vector at each position in the image
+
+	for(int x=1; x<width-1; x++){
+		for(int y=1; y<height-1; y++){
+
+			int vecPos = y * width + x;
+			char areaPixels[9];
+
+			// loop through the area pixels
+			for(int i=-1; i<=1; i++){
+				for(int j=-1; j<=1; j++){
+
+					// determine where to read from in the area (not optimized)
+					int readPos = ((y + j) * spacing * imgW + (x + i)*spacing) * 3;
+
+					unsigned char R = imagePixels[readPos];
+					unsigned char G = imagePixels[readPos+1];
+					unsigned char B = imagePixels[readPos+2];
+
+					char BR = (0.299 * R) + (.587 * G) + (.114 * B);
+
+					int writePos = (j+1) * 3 + (i + 1);
+
+					areaPixels[writePos] = BR;
+				}
+			}
+
+			float dX = (areaPixels[0] + areaPixels[3] + areaPixels[6])/3 - (areaPixels[2] + areaPixels[5] + areaPixels[8])/3;
+			float dY = (areaPixels[0] + areaPixels[1] + areaPixels[2])/3 - (areaPixels[6] + areaPixels[7] + areaPixels[8])/3;
+
+			field[vecPos].x = dY;
+			field[vecPos].y = dX;
+		}
+	}
+}
+
 
 void VectorField::setSpacing(float s){
   spacing = s;

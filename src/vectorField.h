@@ -1,5 +1,6 @@
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
+#include "exprtk.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -16,18 +17,32 @@ class VectorField {
     void draw();
     void perlin(float spacing=0.0077, float t1 = ofRandom(0,30), float t2 = ofRandom(0,30));
     void uniform(glm::vec2 u);
+    void setFromImage(ofImage & img);
     void setSpacing(float s);
     void copy(VectorField*vf);
 
-    void normalise();
-    // void setWidth(int w);
-    // void setHeight(int h);
+    void normalise(float scalar=1);
+    void normalise(int i);
+    void setVector(string eqnX, string eqnY, double x, double y, int brushRadius);
+    void addSink(float x, float y, int brushRadius, float strength);
+    void addMagnet(float x, float y, int brushRadius, float strength);
+    void smudge(float x, float y, float dx, float dy, int brushRadius);
     void save(string fname);
     int loadFromFile(string fname);
+
     void saveXML(string fname);
     bool loadFromXML(string fname);
 
     glm::vec2 getVector(float x, float y);
+
+    // for parsing equation
+    // typedef exprtk::symbol_table<double> symbol_table_t;
+    // typedef exprtk::expression<double>     expression_t;
+    // typedef exprtk::parser<double>             parser_t;
+    exprtk::symbol_table<double>  symbol_table;
+    exprtk::expression<double>  expressionX;
+    exprtk::expression<double>  expressionY;
+
   protected:
     glm::vec2 * field;
     int spacing;

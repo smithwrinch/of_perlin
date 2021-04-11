@@ -67,12 +67,12 @@ void ofApp::mouseDragged(int x, int y, int button){
   // for(int i =-50; i < 50; i ++){
   //   addNewParticle(x+i,y+i);
   // }
-  currentScene->mouseDragged(x,y);
+  currentScene->mouseDragged(x,y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-  currentScene->mousePressed(x,y);
+  currentScene->mousePressed(x,y,button);
 }
 
 //--------------------------------------------------------------

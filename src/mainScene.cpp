@@ -1,6 +1,10 @@
 #include "mainScene.h"
 
 void MainScene::addNewParticle(float x, float y){
+  if(x+50 < ofGetWidth()/2 - WIDTH/2 || x-50 > ofGetWidth()/2 + WIDTH/2
+|| y+50 < ofGetHeight()/2 - HEIGHT/2 || y-50 > ofGetHeight()/2 + HEIGHT/2){
+    return;
+  }
   Particle * newParticle = new Particle(glm::vec2(x,y), particleSpeed, avgLineWidth, particleLifetime);
   newParticle->setColour(particleColour.get().r, particleColour.get().g, particleColour.get().b);
   newParticle->setOpacity(particleColour.get().a);
@@ -10,7 +14,6 @@ void MainScene::addNewParticle(float x, float y){
 }
 
 void MainScene::addNewParticles(float x, float y){
-
   addNewParticle(x, y);
   int thickness = 100/brushThickness;
   for (int i = -brushRadius; i < brushRadius; i +=thickness){
@@ -62,8 +65,8 @@ void MainScene::screenshot(ofImage * img){
 void MainScene::setup(){
   id = 1;
   gui.setup("(g) to toggle");
-  gui.add(brushRadius.setup("brush radius", 1, 5, 100));
-  gui.add(brushThickness.setup("brush thickness", 1, 1, 50));
+  gui.add(brushRadius.setup("brush radius", 1, 5, 400));
+  gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
   gui.add(resetButton.setup("clear (c)"));
   resetButton.addListener(this, &MainScene::clearParticles);
   gui.add(saveImageButton.setup("save image (x)"));
@@ -148,12 +151,12 @@ void MainScene::createVectorField(){
   BaseScene::setID(-3);
 }
 
-void MainScene::mouseDragged(int x, int y){
+void MainScene::mouseDragged(int x, int y, int button){
   addNewParticles(x,y);
 }
 
 //--------------------------------------------------------------
-void MainScene::mousePressed(int x, int y){
+void MainScene::mousePressed(int x, int y, int button){
   addNewParticles(x,y);
 }
 

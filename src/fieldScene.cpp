@@ -5,10 +5,13 @@ void FieldScene::setup(){
   // gui.add(width.setup("width", ofGetWidth(), 1, ofGetWidth()));
   // gui.add(height.setup("height", ofGetHeight(), 1, ofGetHeight()));
   gui.add(spacing.setup("scale", 6, 1, 10));
+  gui.add(brushRadius.setup("brush radius", 0, 0, 400));
+  gui.add(effect.setup("smudge strength (right)", 1, -1, 1));
+  gui.add(strength.setup("source strength (left)", 1, -1, 1));
 
 
   gui.add(saveGroup.setup("save/load"));
-  saveGroup.add(saveText.setup("enter fname here", "s"));
+  saveGroup.add(saveText.setup("enter fname here", ""));
   saveGroup.add(saveButton.setup("save field"));
   saveButton.addListener(this, &FieldScene::saveField);
   saveGroup.add(loadButton.setup("load field"));
@@ -24,12 +27,20 @@ void FieldScene::setup(){
 
   perlinGui.add(randomiseButton.setup("generate"));
   randomiseButton.addListener(this, &FieldScene::randomise);
-  // perlinGui.add(backButton.setup("go back"));
-  // backButton.addListener(this, &FieldScene::goBack);
 
+
+  gui.add(eqnGui.setup("custom equation"));
+  eqnGui.add(eqnLabel.setup("(middle mouse)","apply with brush"));
+  eqnGui.add(eqnXText.setup("x = ", ""));
+  eqnGui.add(eqnYText.setup("y = ", ""));
+  eqnGui.add(eqnButton.setup("apply to all"));
+  eqnButton.addListener(this, &FieldScene::applyEqn);
 
   gui.add(normaliseButton.setup("normalise"));
   normaliseButton.addListener(this, &FieldScene::normalise);
+  gui.add(divideScalar.setup("scalar factor", 1, 1, 10));
+  gui.add(normaliseScalarButton.setup("divide"));
+  normaliseScalarButton.addListener(this, &FieldScene::normaliseWrtScalar);
   gui.add(resetButton.setup("reset"));
   resetButton.addListener(this, &FieldScene::reset);
   gui.add(sendToMainButton.setup("send to main"));
@@ -83,9 +94,16 @@ void FieldScene::reset(){
 void FieldScene::normalise(){
   vectorField.normalise();
 }
+void FieldScene::normaliseWrtScalar(){
+  vectorField.normalise(divideScalar);
+}
 
 void FieldScene::randomise(){
   vectorField.perlin(perlinSpacing, perlinParameterX, perlinParameterY);
+}
+
+void FieldScene::applyEqn(){
+  vectorField.setVector(eqnXText, eqnYText, 0, 0, 0);
 }
 
 void FieldScene::update(){
@@ -95,10 +113,13 @@ void FieldScene::update(){
 }
 
 void FieldScene::draw(){
-    vectorField.draw();
     if(!loading){
       gui.draw();
     }
+    vectorField.draw();
+    ofNoFill();
+    ofDrawCircle(ofGetMouseX(), ofGetMouseY(), brushRadius);
+    ofFill();
 }
 
 
@@ -108,4 +129,46 @@ VectorField * FieldScene::getVectorField(){
 
 void FieldScene::setVectorField(VectorField * field){
   vectorField = *field;
+}
+
+void FieldScene::mouseDragged(int x, int y, int button){
+
+  switch(button){
+    case 0:
+    vectorField.addSink(x,y,brushRadius,float(strength));
+    // vectorField.setVector("sin(x)", "ln(y)", x, y, brushRadius);
+    break;
+    case 1:
+    break;
+    case 2:
+    vectorField.addMagnet(x,y,brushRadius,float(effect));
+    break;
+  }
+}
+
+//--------------------------------------------------------------
+void FieldScene::mousePressed(int x, int y, int button){
+  lastX = x;
+  lastY = y;
+  switch(button){
+    case 0:
+    vectorField.addSink(x,y,brushRadius,float(strength));
+    // vectorField.setVector("sin(x)", "cos(y)", x, y, brushRadius);
+    break;
+    case 1:
+    break;
+    case 2:
+    vectorField.addMagnet(x,y,brushRadius,float(effect));
+    break;
+  }
+}
+
+void FieldScene::mouseReleased(int x, int y, int button){
+  // if(button ==2 ){
+  //   vectorField.addMagnet(x,y,brushRadius, float(effect));
+  // }
+  // else if (button == 0){
+  //
+  //   vectorField.addSink(x,y,brushRadius,float(strength));
+  // }
 }
