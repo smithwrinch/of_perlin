@@ -36,6 +36,7 @@ class MainScene : public BaseScene{
     bool guiOn = true;
 		ofImage img; //for screenshots
     ofFbo fbo;
+    glm::vec2 offsets;
 
     ofxIntSlider brushRadius;
     ofxIntSlider brushThickness;

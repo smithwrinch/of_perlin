@@ -24,6 +24,8 @@ class FieldScene : public BaseScene{
     int minSpacing = 1; //to prevent loaded fields with high spacing crashing
     int lastX;
     int lastY;
+    string eqnX = "";
+    string eqnY = "";
     void saveField();
     void loadField();
     void perlin();
@@ -34,6 +36,7 @@ class FieldScene : public BaseScene{
     void sendToMain();
     void goToMain();
     void applyEqn();
+    void applyBrushEqn();
 
 // panels
     ofxPanel gui;
@@ -75,5 +78,6 @@ class FieldScene : public BaseScene{
   ofxTextField eqnXText;
   ofxTextField eqnYText;
   ofxButton eqnButton;
+  ofxButton eqnBrushButton;
 
 };

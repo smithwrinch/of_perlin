@@ -35,10 +35,12 @@ void FieldScene::setup(){
   eqnGui.add(eqnYText.setup("y = ", ""));
   eqnGui.add(eqnButton.setup("apply to all"));
   eqnButton.addListener(this, &FieldScene::applyEqn);
+  eqnGui.add(eqnBrushButton.setup("apply to brush"));
+  eqnBrushButton.addListener(this, &FieldScene::applyBrushEqn);
 
   gui.add(normaliseButton.setup("normalise"));
   normaliseButton.addListener(this, &FieldScene::normalise);
-  gui.add(divideScalar.setup("scalar factor", 1, 1, 10));
+  gui.add(divideScalar.setup("scalar factor", 1, 0, 2));
   gui.add(normaliseScalarButton.setup("divide"));
   normaliseScalarButton.addListener(this, &FieldScene::normaliseWrtScalar);
   gui.add(resetButton.setup("reset"));
@@ -104,7 +106,15 @@ void FieldScene::randomise(){
 
 void FieldScene::applyEqn(){
   vectorField.setVector(eqnXText, eqnYText, 0, 0, 0);
+  eqnX = eqnXText;
+  eqnY = eqnYText;
 }
+
+void FieldScene::applyBrushEqn(){
+  eqnX = eqnXText;
+  eqnY = eqnYText;
+}
+
 
 void FieldScene::update(){
   ofSetWindowTitle("Vector Field Creator");
@@ -135,10 +145,10 @@ void FieldScene::mouseDragged(int x, int y, int button){
 
   switch(button){
     case 0:
-    vectorField.addSink(x,y,brushRadius,float(strength));
-    // vectorField.setVector("sin(x)", "ln(y)", x, y, brushRadius);
+      vectorField.addSink(x,y,brushRadius,float(strength));
     break;
     case 1:
+      vectorField.addEqnBrush(eqnX, eqnY, x,y,brushRadius);
     break;
     case 2:
     vectorField.addMagnet(x,y,brushRadius,float(effect));
@@ -152,13 +162,13 @@ void FieldScene::mousePressed(int x, int y, int button){
   lastY = y;
   switch(button){
     case 0:
-    vectorField.addSink(x,y,brushRadius,float(strength));
-    // vectorField.setVector("sin(x)", "cos(y)", x, y, brushRadius);
+      vectorField.addSink(x,y,brushRadius,float(strength));
     break;
     case 1:
+      vectorField.addEqnBrush(eqnX, eqnY, x,y,brushRadius);
     break;
     case 2:
-    vectorField.addMagnet(x,y,brushRadius,float(effect));
+      vectorField.addMagnet(x,y,brushRadius,float(effect));
     break;
   }
 }

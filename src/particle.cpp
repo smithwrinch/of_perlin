@@ -100,8 +100,10 @@ void Particle::move(glm::vec2 dir){
 }
 
 void Particle::draw(){
-  ofSetColor(colour);
-  ofDrawCircle(pos.x, pos.y, .75);
+  if(!dead){
+    ofSetColor(colour);
+    ofDrawCircle(pos.x, pos.y, .75);
+  }
 }
 
 void Particle::drawTrail(){

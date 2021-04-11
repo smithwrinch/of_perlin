@@ -1,8 +1,9 @@
 #include "mainScene.h"
 
 void MainScene::addNewParticle(float x, float y){
-  if(x+50 < ofGetWidth()/2 - WIDTH/2 || x-50 > ofGetWidth()/2 + WIDTH/2
-|| y+50 < ofGetHeight()/2 - HEIGHT/2 || y-50 > ofGetHeight()/2 + HEIGHT/2){
+
+  if(x+50 < offsets.x || x-50 > offsets.x + WIDTH
+|| y+50 < offsets.y || y-50 > offsets.y + HEIGHT){
     return;
   }
   Particle * newParticle = new Particle(glm::vec2(x,y), particleSpeed, avgLineWidth, particleLifetime);
@@ -65,7 +66,7 @@ void MainScene::screenshot(ofImage * img){
 void MainScene::setup(){
   id = 1;
   gui.setup("(g) to toggle");
-  gui.add(brushRadius.setup("brush radius", 1, 5, 400));
+  gui.add(brushRadius.setup("brush radius", 1, 1, 400));
   gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
   gui.add(resetButton.setup("clear (c)"));
   resetButton.addListener(this, &MainScene::clearParticles);
@@ -95,7 +96,7 @@ void MainScene::setup(){
 
   vectorField.setup(3);
   vectorField.perlin(0.0077);
-
+  offsets = vectorField.getOffset();
 
 }
 void MainScene::draw(){

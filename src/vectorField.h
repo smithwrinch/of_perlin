@@ -26,7 +26,7 @@ class VectorField {
     void setVector(string eqnX, string eqnY, double x, double y, int brushRadius);
     void addSink(float x, float y, int brushRadius, float strength);
     void addMagnet(float x, float y, int brushRadius, float strength);
-    void smudge(float x, float y, float dx, float dy, int brushRadius);
+    void addEqnBrush(string eqnX, string eqnY, float x, float y, int brushRadius);
     void save(string fname);
     int loadFromFile(string fname);
 
@@ -34,6 +34,7 @@ class VectorField {
     bool loadFromXML(string fname);
 
     glm::vec2 getVector(float x, float y);
+    glm::vec2 getOffset();
 
     // for parsing equation
     // typedef exprtk::symbol_table<double> symbol_table_t;

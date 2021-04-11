@@ -196,13 +196,14 @@ void VectorField::addMagnet(float x, float y, int brushRadius, float strength){
     float newX = r*cos(theta);
     float newY = r*sin(theta);
 
+
     xVal += newX;
     yVal += newY;
 
     field[i].x = xVal;//*(effect);
     field[i].y = yVal;//*(effect);
     float newdist = sqrt(pow(xVal, 2) + pow(yVal, 2));
-    if(newdist > 1){
+    if(newdist > 1 && r > 0.005){
       normalise(i);
     }
 
@@ -211,13 +212,16 @@ void VectorField::addMagnet(float x, float y, int brushRadius, float strength){
 
 void VectorField::addSink(float x, float y, int brushRadius, float strength){
   for(int i=0; i<width*height; i++){
-    //
     int w = i % width;
     int h = i / width;
     float xPos = w * spacing + offX;
     float yPos = h * spacing + offY;
     float dirX = xPos - x;
     float dirY = yPos - y;
+
+    float xVal = field[i].x;
+    float yVal = field[i].y;
+
     float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
     if(dist > brushRadius && brushRadius !=0){ //inside cricle
       continue;
@@ -227,8 +231,11 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
       dist = 0.001;
     }
 
-    float outX = -(strength)*(dirX)/dist;
-    float outY = -(strength)*(dirY)/dist;
+    // float outX = -(strength/100)*(xVal*dirX)/(pow(xVal,2) + pow(yVal,2));
+    // float outY = -(strength/100)*(yVal*dirY)/(pow(xVal,2) + pow(yVal,2));
+
+    float outX = strength *dirX/dist;
+    float outY = strength *dirY/dist;
     if(brushRadius !=0){
       outX *= (1 - dist/brushRadius);
       outY *= (1 - dist/brushRadius);
@@ -238,6 +245,61 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
 
   }
   // normalise();
+}
+
+void VectorField::addEqnBrush(string eqnX, string eqnY, float x, float y, int brushRadius){
+  exprtk::parser<double> parser;
+  if(brushRadius==0){
+    return;
+  }
+  for(int i=0; i<width*height; i++){
+    int w = i % width;
+    int h = i / width;
+    double xPos = w * spacing + offX;
+    double yPos = h * spacing + offY;
+    float dirX = xPos - x;
+    float dirY = yPos - y;
+    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    if(dist > brushRadius){ //inside cricle
+      continue;
+    }
+
+    // Register x with the symbol_table
+    xPos -= offX;
+    yPos -= offY;
+
+    xPos -= WIDTH/2;
+    yPos -= HEIGHT/2;
+
+    xPos /= spacing;
+    yPos /= spacing;
+
+    symbol_table.remove_variable("x");
+    symbol_table.remove_variable("y");
+    symbol_table.add_variable("x",xPos);
+    symbol_table.add_variable("y",yPos);
+
+
+    // Instantiate parser and compile the expression
+
+    if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+     cout << "error: bad equation" << "\n";
+     return;
+    };
+
+    double resultX = 0.0;
+    double resultY = 0.0;
+
+    // Evaluate and print result
+    resultX = expressionX.value();
+    // printf("Result1: %10.5f\n",resultX);
+    resultY = expressionY.value();
+    // printf("Result1: %10.5f\n",resultY);
+    field[i].x = float(resultX);
+    field[i].y = float(resultY);
+
+
+  }
 }
 
 
@@ -333,13 +395,9 @@ void VectorField::setSpacing(float s){
 }
 
 
-// void VectorField::setWidth(int w){
-//   width = w;
-// }
-//
-// void VectorField::setHeight(int h){
-//   height = h;
-// }
+glm::vec2 VectorField::getOffset(){
+  return glm::vec2(offX, offY);
+}
 // returns interpolated vector at position x and y
 glm::vec2 VectorField::getVector(float x, float y){
   // if(x < 0 || y < 0 || x > width || y > height){
