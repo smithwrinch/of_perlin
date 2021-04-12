@@ -30,6 +30,7 @@ class FieldScene : public BaseScene{
     void loadField();
     void perlin();
     void randomise();
+    void smooth();
     void normalise();
     void normaliseWrtScalar();
     void reset();
@@ -60,6 +61,10 @@ class FieldScene : public BaseScene{
     ofxButton resetButton;
     ofxButton sendToMainButton;
     ofxButton goToMainButton;
+    ofxIntSlider smoothKernel;
+    ofxFloatSlider smoothSigma;
+    ofxFloatSlider smoothStrength;
+    ofxButton smoothButton;
     // ofxTextField loadText;
 
 

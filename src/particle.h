@@ -3,7 +3,7 @@
 class Particle {
 public:
 
-    Particle(glm::vec2 startPos, float speed = 10, float swidth = 0.01, float d = 0);
+    Particle(glm::vec2 startPos, float speed = 10, float swidth = 0.01, float d = 0, float size = 0.75);
     // Particle(glm::vec2 startPos, float s, float swidth);
     ~Particle();
 
@@ -32,6 +32,7 @@ public:
     float startTime;
     float strokeWidth;
     float duration;
+    float radius;
     bool dead = false;
     float speed;
 

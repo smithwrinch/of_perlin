@@ -4,7 +4,6 @@
 TODO:
 - add vector field from image
 - add perlin noise effect on generation (possibly)
-- fix screenshot
 - look into possibility of video
 */
 
@@ -100,6 +99,85 @@ void VectorField::uniform(glm::vec2 u){
   	}
 
 }
+// gaussian blur
+void VectorField::blur(int kernelSize, float sigma, float strength){
+
+  if(kernelSize % 2 == 0){
+    cout << "kernel cannot be even" << "\n";
+    return;
+  }
+
+  double kernel[kernelSize][kernelSize];
+  double mean = kernelSize/2;
+  double sum = 0.0; // For accumulating the kernel values
+  for (int x = 0; x < kernelSize; ++x)
+      for (int y = 0; y < kernelSize; ++y) {
+          kernel[x][y] = exp( -0.5 * (pow((x-mean)/sigma, 2.0) + pow((y-mean)/sigma,2.0)) )
+                           / (2 * M_PI * sigma * sigma);
+
+          // Accumulate the kernel values
+          sum += kernel[x][y];
+      }
+
+
+
+  // Normalize the kernel
+  for (int x = 0; x < kernelSize; ++x){
+    for (int y = 0; y < kernelSize; ++y){
+      kernel[x][y] /= sum;
+      kernel[x][y] *= strength;
+      // cout << kernel[x][y] << " ,";
+    }
+    // cout << "\n";
+  }
+
+
+  vector<glm::vec2> tmpArray;
+
+	float blurTotal = 1.0;
+
+	// for(int i=0; i<kernelSize*kernelSize; i++) blurTotal += kernel[i][i%kernelSize];
+    for(int i=0; i<width*height; i++){
+        glm::vec2 tmp = glm::vec2(0, 0);
+        tmpArray.push_back(tmp);
+    }
+
+  int knum = (kernelSize-1)/2;
+
+	for(int x=knum; x<width-knum; x++){
+		for(int y=knum; y<height-knum; y++){
+
+			int dstPos = y * width + x;
+
+			for(int i=0; i<2*knum; i++){
+				for(int j=0; j<2*knum; j++){
+
+					int srcPos = (y + j-knum) * width + x + i-knum;
+					// int arrayPos = (j + 1) * 3 + i + 1;
+          // int iPos =
+
+          tmpArray[dstPos] += field[srcPos] * kernel[i][j];
+					//tmpArray[dstPos] += vectorField[srcPos] * blurVals[arrayPos];
+				}
+			}
+		}
+	}
+	/*
+	for(int x = 0; x<width; x++) tmpArray[x] = vectorField[x];
+	for(int x = 0; x<width; x++) tmpArray[(height-1)*width+x] = vectorField[(height-1)*width+x];
+	for(int y = 0; y<height; y++) tmpArray[y*width] = vectorField[y*width];
+	for(int y = 0; y<height; y++) tmpArray[y*width+width-1] = vectorField[y*width+width-1];
+	*/
+    // for(int x = 0; x<width; x++) tmpArray.at(x)= field[x];
+    // for(int x = 0; x<width; x++) tmpArray.at((height-1)*width+x) = field[(height-1)*width+x];
+    // for(int y = 0; y<height; y++) tmpArray.at(y*width) = field[y*width];
+    // for(int y = 0; y<height; y++) tmpArray.at(y*width+width-1) = field[y*width+width-1];
+
+	for(int i=0; i<width*height; i++) {
+
+		field[i] = tmpArray[i] / blurTotal;
+	}
+}
 
 void VectorField::normalise(float scalar){
   for(int i=0; i<width*height; i++){
@@ -122,42 +200,42 @@ void VectorField::normalise(int i){
 
 
 void VectorField::setVector(string eqnX, string eqnY, double x, double y, int brushRadius){
-
-  exprtk::parser<double> parser;
-  for(int i=0; i<width*height; i++){
-  	double xPos = i % width;
-  	double yPos = i / width;
-
-    if( i % 1000 == 0){
-      cout << (i *100/(width*height)) << "% remaining" << "\n";
-    }
-
-    // Register x with the symbol_table
-
-     symbol_table.remove_variable("x");
-     symbol_table.remove_variable("y");
-     symbol_table.add_variable("x",xPos);
-     symbol_table.add_variable("y",yPos);
-
-
-     // Instantiate parser and compile the expression
-
-     if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
-       cout << "error: bad equation" << "\n";
-       return;
-     };
-
-     double resultX = 0.0;
-     double resultY = 0.0;
-
-     // Evaluate and print result
-     resultX = expressionX.value();
-     // printf("Result1: %10.5f\n",resultX);
-     resultY = expressionY.value();
-     // printf("Result1: %10.5f\n",resultY);
-     field[i].x = float(resultX);
-     field[i].y = float(resultY);
-   }
+  //
+  // exprtk::parser<double> parser;
+  // for(int i=0; i<width*height; i++){
+  // 	double xPos = i % width;
+  // 	double yPos = i / width;
+  //
+  //   if( i % 1000 == 0){
+  //     cout << (i *100/(width*height)) << "% remaining" << "\n";
+  //   }
+  //
+  //   // Register x with the symbol_table
+  //
+  //    symbol_table.remove_variable("x");
+  //    symbol_table.remove_variable("y");
+  //    symbol_table.add_variable("x",xPos);
+  //    symbol_table.add_variable("y",yPos);
+  //
+  //
+  //    // Instantiate parser and compile the expression
+  //
+  //    if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+  //      cout << "error: bad equation" << "\n";
+  //      return;
+  //    };
+  //
+  //    double resultX = 0.0;
+  //    double resultY = 0.0;
+  //
+  //    // Evaluate and print result
+  //    resultX = expressionX.value();
+  //    // printf("Result1: %10.5f\n",resultX);
+  //    resultY = expressionY.value();
+  //    // printf("Result1: %10.5f\n",resultY);
+  //    field[i].x = float(resultX);
+  //    field[i].y = float(resultY);
+  //  }
 
 }
 
@@ -248,58 +326,58 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
 }
 
 void VectorField::addEqnBrush(string eqnX, string eqnY, float x, float y, int brushRadius){
-  exprtk::parser<double> parser;
-  if(brushRadius==0){
-    return;
-  }
-  for(int i=0; i<width*height; i++){
-    int w = i % width;
-    int h = i / width;
-    double xPos = w * spacing + offX;
-    double yPos = h * spacing + offY;
-    float dirX = xPos - x;
-    float dirY = yPos - y;
-    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
-    if(dist > brushRadius){ //inside cricle
-      continue;
-    }
-
-    // Register x with the symbol_table
-    xPos -= offX;
-    yPos -= offY;
-
-    xPos -= WIDTH/2;
-    yPos -= HEIGHT/2;
-
-    xPos /= spacing;
-    yPos /= spacing;
-
-    symbol_table.remove_variable("x");
-    symbol_table.remove_variable("y");
-    symbol_table.add_variable("x",xPos);
-    symbol_table.add_variable("y",yPos);
-
-
-    // Instantiate parser and compile the expression
-
-    if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
-     cout << "error: bad equation" << "\n";
-     return;
-    };
-
-    double resultX = 0.0;
-    double resultY = 0.0;
-
-    // Evaluate and print result
-    resultX = expressionX.value();
-    // printf("Result1: %10.5f\n",resultX);
-    resultY = expressionY.value();
-    // printf("Result1: %10.5f\n",resultY);
-    field[i].x = float(resultX);
-    field[i].y = float(resultY);
-
-
-  }
+  // exprtk::parser<double> parser;
+  // if(brushRadius==0){
+  //   return;
+  // }
+  // for(int i=0; i<width*height; i++){
+  //   int w = i % width;
+  //   int h = i / width;
+  //   double xPos = w * spacing + offX;
+  //   double yPos = h * spacing + offY;
+  //   float dirX = xPos - x;
+  //   float dirY = yPos - y;
+  //   float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+  //   if(dist > brushRadius){ //inside cricle
+  //     continue;
+  //   }
+  //
+  //   // Register x with the symbol_table
+  //   xPos -= offX;
+  //   yPos -= offY;
+  //
+  //   xPos -= WIDTH/2;
+  //   yPos -= HEIGHT/2;
+  //
+  //   xPos /= spacing;
+  //   yPos /= spacing;
+  //
+  //   symbol_table.remove_variable("x");
+  //   symbol_table.remove_variable("y");
+  //   symbol_table.add_variable("x",xPos);
+  //   symbol_table.add_variable("y",yPos);
+  //
+  //
+  //   // Instantiate parser and compile the expression
+  //
+  //   if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+  //    cout << "error: bad equation" << "\n";
+  //    return;
+  //   };
+  //
+  //   double resultX = 0.0;
+  //   double resultY = 0.0;
+  //
+  //   // Evaluate and print result
+  //   resultX = expressionX.value();
+  //   // printf("Result1: %10.5f\n",resultX);
+  //   resultY = expressionY.value();
+  //   // printf("Result1: %10.5f\n",resultY);
+  //   field[i].x = float(resultX);
+  //   field[i].y = float(resultY);
+  //
+  //
+  // }
 }
 
 

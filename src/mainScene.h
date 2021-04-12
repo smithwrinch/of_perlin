@@ -19,13 +19,15 @@ class MainScene : public BaseScene{
     vector<Particle *> particles;
 
   private:
-    void screenshot(ofImage* img) override;
     void addNewParticle(float x, float y);
     void addNewParticles(float x, float y);
     void loadVectorField();
     void toggleVectorField(bool & value);
     void clearParticles();
-    void saveImage();
+    void saveImage(ofImage * img);
+    void screenshot();
+    void clearBackground();
+    void rasterise();
     void createVectorField();
     bool toggleParticle();
     bool toggleParticleTrail();
@@ -33,8 +35,10 @@ class MainScene : public BaseScene{
     bool loading = false;
     bool showField = false;
     bool screenshotting = false;
+    bool imgAllocated = false;
     bool guiOn = true;
 		ofImage img; //for screenshots
+		ofImage imgRast; //for raster
     ofFbo fbo;
     glm::vec2 offsets;
 
@@ -42,6 +46,9 @@ class MainScene : public BaseScene{
     ofxIntSlider brushThickness;
     ofxButton resetButton;
     ofxButton saveImageButton;
+    ofxButton rasteriseButton;
+    ofxButton clearBackgroundButton;
+    ofParameter<ofColor> backgroundColour;
 
     ofxGuiGroup particleGroup;
     ofxIntSlider maxParticles;
@@ -49,6 +56,7 @@ class MainScene : public BaseScene{
     ofxIntSlider particleOpacity;
     ofxFloatSlider particleLifetime;
     ofxFloatSlider particleSpeed;
+    ofxFloatSlider particleSize;
     ofParameter<ofColor> particleColour;
     ofxToggle showParticleButton;
     ofxToggle showTrailButton;

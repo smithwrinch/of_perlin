@@ -11,7 +11,7 @@ void FieldScene::setup(){
 
 
   gui.add(saveGroup.setup("save/load"));
-  saveGroup.add(saveText.setup("enter fname here", ""));
+  saveGroup.add(saveText.setup("fname = ", ""));
   saveGroup.add(saveButton.setup("save field"));
   saveButton.addListener(this, &FieldScene::saveField);
   saveGroup.add(loadButton.setup("load field"));
@@ -38,6 +38,13 @@ void FieldScene::setup(){
   eqnGui.add(eqnBrushButton.setup("apply to brush"));
   eqnBrushButton.addListener(this, &FieldScene::applyBrushEqn);
 
+
+
+  gui.add(smoothKernel.setup("smooth kernel", 3, 3, 9));
+  gui.add(smoothSigma.setup("smooth sigma", 1, 0.1, 3));
+  gui.add(smoothStrength.setup("smooth strength", 1, 1, 3));
+  gui.add(smoothButton.setup("smooth"));
+  smoothButton.addListener(this, &FieldScene::smooth);
   gui.add(normaliseButton.setup("normalise"));
   normaliseButton.addListener(this, &FieldScene::normalise);
   gui.add(divideScalar.setup("scalar factor", 1, 0, 2));
@@ -91,6 +98,10 @@ void FieldScene::reset(){
   vectorField.setSpacing(1);
   vectorField.uniform(glm::vec2(1,0));
   minSpacing = 1;
+}
+
+void FieldScene::smooth(){
+  vectorField.blur(smoothKernel, smoothSigma, smoothStrength);
 }
 
 void FieldScene::normalise(){

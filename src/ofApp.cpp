@@ -48,9 +48,6 @@ void ofApp::keyPressed(int key){
     }
   }
   currentScene->keyPressed(key);
-  if(key == 'x'){
-    currentScene->screenshot(&img);
-  }
 }
 
 //--------------------------------------------------------------

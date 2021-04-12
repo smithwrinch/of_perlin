@@ -6,7 +6,7 @@ void MainScene::addNewParticle(float x, float y){
 || y+50 < offsets.y || y-50 > offsets.y + HEIGHT){
     return;
   }
-  Particle * newParticle = new Particle(glm::vec2(x,y), particleSpeed, avgLineWidth, particleLifetime);
+  Particle * newParticle = new Particle(glm::vec2(x,y), particleSpeed, avgLineWidth, particleLifetime, particleSize);
   newParticle->setColour(particleColour.get().r, particleColour.get().g, particleColour.get().b);
   newParticle->setOpacity(particleColour.get().a);
   newParticle->setTrailColour(particleTrailColour.get().r, particleTrailColour.get().g, particleTrailColour.get().b);
@@ -46,16 +46,33 @@ void MainScene::clearParticles(){
   particles.clear();
 }
 
+void MainScene::rasterise(){
+  // ofBackground(0,0,0, 0);
+  saveImage(&imgRast);
+  imgAllocated = true;
+  clearParticles();
 
-void MainScene::saveImage(){
-  screenshotting = true;
-  MainScene::screenshot(&img);
-  screenshotting = false;
+  // ofBackground(0,0,0, 0);
 }
 
-void MainScene::screenshot(ofImage * img){
-  BaseScene::screenshot(img);
+void MainScene::screenshot(){
+  saveImage(&img);
 }
+
+void MainScene::saveImage(ofImage * image){
+  string imgPath = "temp.jpg";
+  image->grabScreen( offsets.x, offsets.y, WIDTH, HEIGHT);
+  ofPixels & pixels = image->getPixels();
+  pixels.swapRgb();   // fix inverted R and B channels
+  ofSaveImage(pixels, imgPath, OF_IMAGE_QUALITY_BEST);
+  // img.clear();
+  pixels.clear();
+}
+
+void MainScene::clearBackground(){
+  imgAllocated = false;
+}
+
 // bool MainScene::toggleParticle(){
 //   return true;
 // }
@@ -70,13 +87,19 @@ void MainScene::setup(){
   gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
   gui.add(resetButton.setup("clear (c)"));
   resetButton.addListener(this, &MainScene::clearParticles);
+  gui.add(rasteriseButton.setup("rasterise"));
+  rasteriseButton.addListener(this, &MainScene::rasterise);
   gui.add(saveImageButton.setup("save image (x)"));
-  saveImageButton.addListener(this, &MainScene::saveImage);
+  saveImageButton.addListener(this, &MainScene::screenshot);
+  gui.add(clearBackgroundButton.setup("clear background"));
+  clearBackgroundButton.addListener(this, &MainScene::clearBackground);
+  gui.add(backgroundColour.set("background colour", ofColor(30,30,30,255)));
 
   gui.add(particleGroup.setup("particles"));
   particleGroup.add(maxParticles.setup("max particles", 100, 0, 50000));
   particleGroup.add(particleLifetime.setup("particle lifetime", 0, 0, 20));
   particleGroup.add(particleSpeed.setup("particle speed", 10, 0, 10));
+  particleGroup.add(particleSize.setup("particle size", 0.75, 0.2, 5));
   particleGroup.add(showParticleButton.setup("show particle", true));
   particleGroup.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
 
@@ -100,6 +123,10 @@ void MainScene::setup(){
 
 }
 void MainScene::draw(){
+  ofBackground(backgroundColour.get());
+  if(imgAllocated){ //to remove annoying warnings
+    imgRast.draw(offsets.x, offsets.y);
+  }
   if(showField){
     vectorField.draw();
   }
@@ -177,6 +204,9 @@ void MainScene::keyPressed(int key){
      break;
      case 'g':
       guiOn = !guiOn;
+     break;
+     case 'x':
+     saveImage(&img);
      break;
    }
 }

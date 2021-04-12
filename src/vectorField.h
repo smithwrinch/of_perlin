@@ -17,12 +17,13 @@ class VectorField {
     void draw();
     void perlin(float spacing=0.0077, float t1 = ofRandom(0,30), float t2 = ofRandom(0,30));
     void uniform(glm::vec2 u);
+    void blur(int kernelSize, float sigma, float strength);
     void setFromImage(ofImage & img);
+    void normalise(float scalar=1);
+    void normalise(int i);
     void setSpacing(float s);
     void copy(VectorField*vf);
 
-    void normalise(float scalar=1);
-    void normalise(int i);
     void setVector(string eqnX, string eqnY, double x, double y, int brushRadius);
     void addSink(float x, float y, int brushRadius, float strength);
     void addMagnet(float x, float y, int brushRadius, float strength);

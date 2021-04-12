@@ -1,11 +1,12 @@
 
 #include "particle.h"
 
-Particle::Particle(glm::vec2 p, float s, float swidth, float d){
+Particle::Particle(glm::vec2 p, float s, float swidth, float d, float size){
   startTime = ofGetElapsedTimef();
   speed = s;
   strokeWidth = swidth;
   duration = d;
+  radius = size;
   pos = p;
   startPos = p;
   // ofSetBackgroundAuto(false);
@@ -102,7 +103,7 @@ void Particle::move(glm::vec2 dir){
 void Particle::draw(){
   if(!dead){
     ofSetColor(colour);
-    ofDrawCircle(pos.x, pos.y, .75);
+    ofDrawCircle(pos.x, pos.y, radius);
   }
 }
 
