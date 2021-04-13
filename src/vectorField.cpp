@@ -26,6 +26,7 @@ void VectorField::setup(float s, float oX, float oY){
   expressionX.register_symbol_table(symbol_table);
   expressionY.register_symbol_table(symbol_table);
 
+  // out.allocate(WIDTH, HEIGHT, OF_IMAGE_COLOR);
 	// glPopMatrix();
 }
 
@@ -284,7 +285,6 @@ void VectorField::addMagnet(float x, float y, int brushRadius, float strength){
     if(newdist > 1 && r > 0.005){
       normalise(i);
     }
-
   }
 }
 
@@ -379,7 +379,27 @@ void VectorField::addEqnBrush(string eqnX, string eqnY, float x, float y, int br
   //
   // }
 }
+//
+// // converts field to an image to be used as shader
+void VectorField::convertToImage(){
+  ofImage a;
+  a.allocate(width,height, OF_IMAGE_COLOR);
+  a.setColor(ofColor::white);
+  a.update();
+  for(int i=0; i<width*height; i++){
+    int w = i % width;
+    int h = i / width;
+    // out.setColor(w, h, ofColor(field[i].x, field[i].y, 0));
+    a.getPixels()[i*3] = 255*field[i].x;
+    a.getPixels()[i*3+1] = 255*field[i].y;
+    a.getPixels()[i*3+2] = 0;
 
+  }
+
+  ofPixels & pixels = a.getPixels();
+  pixels.swapRgb();   // fix inverted R and B channels
+  ofSaveImage(pixels, "temp.png", OF_IMAGE_QUALITY_BEST);
+}
 
 void VectorField::setFromImage(ofImage & image){
 
@@ -476,6 +496,22 @@ void VectorField::setSpacing(float s){
 glm::vec2 VectorField::getOffset(){
   return glm::vec2(offX, offY);
 }
+
+glm::vec2 * VectorField::getField(){
+  return field;
+}
+
+int VectorField::getSpacing(){
+  return spacing;
+}
+
+void VectorField::setAll(float x, float y){
+  for (int i = 0; i < width*height; i++){
+    field[i].x = x;
+    field[i].y = y;
+  }
+}
+
 // returns interpolated vector at position x and y
 glm::vec2 VectorField::getVector(float x, float y){
   // if(x < 0 || y < 0 || x > width || y > height){

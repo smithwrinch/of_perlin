@@ -34,7 +34,9 @@ class FieldScene : public BaseScene{
     void normalise();
     void normaliseWrtScalar();
     void reset();
+    void clear();
     void sendToMain();
+    void sendToGPU();
     void goToMain();
     void applyEqn();
     void applyBrushEqn();
@@ -59,7 +61,9 @@ class FieldScene : public BaseScene{
     ofxButton normaliseButton;
     ofxButton normaliseScalarButton;
     ofxButton resetButton;
+    ofxButton clearButton;
     ofxButton sendToMainButton;
+    ofxButton sendToGPUButton;
     ofxButton goToMainButton;
     ofxIntSlider smoothKernel;
     ofxFloatSlider smoothSigma;

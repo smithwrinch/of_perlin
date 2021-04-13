@@ -5,6 +5,8 @@
 #include "mainScene.h"
 #include "fieldScene.h"
 #include "baseScene.h"
+#include "GPUScene.h"
+
 
 
 class ofApp : public ofBaseApp{
@@ -14,6 +16,7 @@ class ofApp : public ofBaseApp{
 		BaseScene * currentScene;
 		MainScene mainScene;
 		FieldScene fieldScene;
+		GPUScene gpuScene;
 
 		void setup();
 		void update();

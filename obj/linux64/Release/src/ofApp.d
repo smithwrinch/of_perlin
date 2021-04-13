@@ -578,7 +578,8 @@ obj/linux64/Release/src/ofApp.o: \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxLabel.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxColorPicker.h \
  /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxPanel.h \
- /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/fieldScene.h
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/fieldScene.h \
+ /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/GPUScene.h
 
 /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/ofApp.h:
 
@@ -1771,3 +1772,5 @@ obj/linux64/Release/src/ofApp.o: \
 /home/hans/OF/of_v0.11.0_linux64gcc6_release/addons/ofxGui/src/ofxPanel.h:
 
 /home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/fieldScene.h:
+
+/home/hans/OF/of_v0.11.0_linux64gcc6_release/apps/myApps/project/src/GPUScene.h:

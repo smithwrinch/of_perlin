@@ -50,8 +50,12 @@ void FieldScene::setup(){
   gui.add(divideScalar.setup("scalar factor", 1, 0, 2));
   gui.add(normaliseScalarButton.setup("divide"));
   normaliseScalarButton.addListener(this, &FieldScene::normaliseWrtScalar);
+  gui.add(clearButton.setup("clear"));
+  clearButton.addListener(this, &FieldScene::clear);
   gui.add(resetButton.setup("reset"));
   resetButton.addListener(this, &FieldScene::reset);
+  gui.add(sendToGPUButton.setup("send to gpu"));
+  sendToGPUButton.addListener(this, &FieldScene::sendToGPU);
   gui.add(sendToMainButton.setup("send to main"));
   sendToMainButton.addListener(this, &FieldScene::sendToMain);
   gui.add(goToMainButton.setup("go back to main (a)"));
@@ -88,6 +92,11 @@ void FieldScene::sendToMain(){
   BaseScene::setID(-2);
 }
 
+void FieldScene::sendToGPU(){
+  cout << "Sending to gpu scene" << "\n";
+  BaseScene::setID(-4);
+}
+
 void FieldScene::goToMain(){
   cout << "Going to main scene" << "\n";
   BaseScene::setID(-1);
@@ -98,6 +107,10 @@ void FieldScene::reset(){
   vectorField.setSpacing(1);
   vectorField.uniform(glm::vec2(1,0));
   minSpacing = 1;
+}
+
+void FieldScene::clear(){
+  vectorField.setAll(0,0);
 }
 
 void FieldScene::smooth(){

@@ -23,6 +23,8 @@ class VectorField {
     void normalise(int i);
     void setSpacing(float s);
     void copy(VectorField*vf);
+    void convertToImage();
+    void setAll(float x, float y);
 
     void setVector(string eqnX, string eqnY, double x, double y, int brushRadius);
     void addSink(float x, float y, int brushRadius, float strength);
@@ -36,6 +38,8 @@ class VectorField {
 
     glm::vec2 getVector(float x, float y);
     glm::vec2 getOffset();
+    glm::vec2 * getField();
+    int getSpacing();
 
     // for parsing equation
     // typedef exprtk::symbol_table<double> symbol_table_t;
@@ -44,6 +48,7 @@ class VectorField {
     exprtk::symbol_table<double>  symbol_table;
     exprtk::expression<double>  expressionX;
     exprtk::expression<double>  expressionY;
+    // ofImage out;
 
   protected:
     glm::vec2 * field;
