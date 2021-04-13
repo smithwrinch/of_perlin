@@ -13,11 +13,26 @@ out vec4 vFragColor;
 void main(void){
     // Get the position and velocity from the pixel color.
     vec2 pos = texture( prevPosData, vTexCoord ).xy;
-    vec2 vel = texture( velData, pos*800).xy;
+    vec3 vel = texture( velData, pos*800).xyz;
     //vec2 fieldVel = texture(field, pos.xy).xy;
 
     // Update the position.
-    pos += vel*timestep;
+
+    if(vel.z <= 0.25){
+      pos += vel.xy*timestep;
+    }
+    else if(vel.z <= 0.5){
+      pos.x -= vel.x * timestep;
+      pos.y += vel.y * timestep;
+    }
+    else if (vel.z <= 0.75){
+      pos.x += vel.x * timestep;
+      pos.y -= vel.y * timestep;
+    }
+    else{
+      pos -= vel.xy * timestep;
+    }
+
     //pos += (fieldVel/255);
 
     // And finally store it on the position FBO.

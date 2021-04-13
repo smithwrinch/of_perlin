@@ -1,25 +1,47 @@
 #include "GPUScene.h"
 
 
+void GPUScene::setupGui(){
+  gui.setup();
+  gui.add(brushRadius.setup("brush radius", 0, 0, 400));
+  gui.add(timeStep.setup("particle speed", 0.005, 0.0001, 0.01));
+  gui.add(particleSize.setup("particle size", 30., 10., 100.));
+  gui.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
+  gui.add(loadButton.setup("load field"));
+  loadButton.addListener(this, &GPUScene::loadVectorField);
+  gui.add(loadParticleButton.setup("load particle texture"));
+  loadParticleButton.addListener(this, &GPUScene::loadParticleTexture);
+  gui.add(playButton.setup("play/pause"));
+  playButton.addListener(this, &GPUScene::togglePlay);
+}
+
 void GPUScene::texturiseField(){
   vectorField.convertToImage();
   image.load("temp.png");
   image.resize(800,800);
+  ofSaveImage(image.getPixels(), "temp2.png", OF_IMAGE_QUALITY_BEST);
 }
 
 void GPUScene::resetPositions(){
-  vector<float> pos(numParticles*3);
   for (int x = 0; x < textureRes; x++){
       for (int y = 0; y < textureRes; y++){
           int i = textureRes * y + x;
-
-          pos[i*3 + 0] = ofRandom(1.0); //x*offset;
-          pos[i*3 + 1] = ofRandom(1.0); //y*offset;
+          pos[i*3 + 0] = -100.; //x*offset;
+          pos[i*3 + 1] = -100.; //y*offset;
           pos[i*3 + 2] = 0.0;
       }
   }
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+}
+
+
+void GPUScene::addParticle(float x, float y){
+  pos[activeParticles*3] = (x-offsets.x)/width;
+  pos[activeParticles*3 + 1] = (y-offsets.y)/height;
+  posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+  // posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+  activeParticles++;
 }
 
 void GPUScene::loadVectorField(){
@@ -32,14 +54,24 @@ void GPUScene::loadVectorField(){
   texturiseField();
 }
 
+void GPUScene::loadParticleTexture(){
+}
+
+void GPUScene::togglePlay(){
+}
+
+
 void GPUScene::setup(){
+  setupGui();
+  showField = false;
   vectorField.setup(3);
   vectorField.perlin(0.0077);
   offsets = vectorField.getOffset();
   texturiseField();
-  particleSize = 30.0f;
-  timeStep = 0.005f;
-  numParticles = 1000;
+  // particleSize = 30.0f;
+  // timeStep = 0.005f;
+  numParticles = MAX_PARTICLES;
+  activeParticles= 0;
   width = 800;
   height = 800;
   // gui.setup("(g) to toggle");
@@ -59,13 +91,12 @@ void GPUScene::setup(){
   numParticles = textureRes * textureRes;
 
   // 1. Making arrays of float pixels with position information
-  vector<float> pos(numParticles*3);
+  pos.resize(numParticles*3);
   for (int x = 0; x < textureRes; x++){
       for (int y = 0; y < textureRes; y++){
           int i = textureRes * y + x;
-
-          pos[i*3 + 0] = ofRandom(1.0); //x*offset;
-          pos[i*3 + 1] = ofRandom(1.0); //y*offset;
+          pos[i*3 + 0] = -100.0; //x*offset;
+          pos[i*3 + 1] = -100.0; //y*offset;
           pos[i*3 + 2] = 0.0;
       }
   }
@@ -73,19 +104,19 @@ void GPUScene::setup(){
   posPingPong.allocate(textureRes, textureRes, GL_RGB32F);
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
-
-
-  // 2. Making arrays of float pixels with velocity information and the load it to a texture
-  vector<float> vel(numParticles*3);
-  for (int i = 0; i < numParticles; i++){
-      vel[i*3 + 0] = ofRandom(-1.0,1.0);
-      vel[i*3 + 1] = ofRandom(-1.0,1.0);
-      vel[i*3 + 2] = 1.0;
-  }
-  // Load this information in to the FBO's texture
-  velPingPong.allocate(textureRes, textureRes, GL_RGB32F);
-  velPingPong.src->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
-  velPingPong.dst->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
+  //
+  //
+  // // 2. Making arrays of float pixels with velocity information and the load it to a texture
+  // vector<float> vel(numParticles*3);
+  // for (int i = 0; i < numParticles; i++){
+  //     vel[i*3 + 0] = 0.0;
+  //     vel[i*3 + 1] = 0.0;
+  //     vel[i*3 + 2] = 1.0;
+  // }
+  // // Load this information in to the FBO's texture
+  // velPingPong.allocate(textureRes, textureRes, GL_RGB32F);
+  // velPingPong.src->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
+  // velPingPong.dst->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
 
   // Loading and setings of the variables of the textures of the particles
   sparkImg.load("spark.png");
@@ -109,16 +140,18 @@ void GPUScene::setup(){
 }
 void GPUScene::draw(){
   ofBackground(0);
-
-  // vectorField.draw();
+  gui.draw();
   ofSetColor(100,255,255);
   renderFBO.draw(offsets.x,offsets.y);
 
   ofSetColor(255);
   ofDrawBitmapString("Fps: " + ofToString( ofGetFrameRate()), 15,15);
+  if(showField){
+    vectorField.draw();
+  }
 }
 void GPUScene::update(){
-  velPingPong.dst->begin();
+  // velPingPong.dst->begin();
   ofClear(0);
   updateVel.begin();
   // updateVel.setUniformTexture("backbuffer", velPingPong.src->getTexture(), 0);   // passing the previous velocity information
@@ -129,12 +162,12 @@ void GPUScene::update(){
   updateVel.setUniform1f("timestep", (float)timeStep);
 
   // draw the source velocity texture to be updated
-  velPingPong.src->draw(0, 0);
+  // velPingPong.src->draw(0, 0);
 
   updateVel.end();
-  velPingPong.dst->end();
+  // velPingPong.dst->end();
 
-  velPingPong.swap();
+  // velPingPong.swap();
 
 
   // Positions PingPong
@@ -193,13 +226,17 @@ void GPUScene::update(){
 }
 
 VectorField * GPUScene::getVectorField(){
+  cout << "getting vector field" <<"\n";
+  vectorField.perlin(0.2);
   return &vectorField;
 }
 void GPUScene::mouseDragged(int x, int y, int button){
+  addParticle(x, y);
 }
 
 //--------------------------------------------------------------
 void GPUScene::mousePressed(int x, int y, int button){
+  addParticle(x, y);
 }
 
 //--------------------------------------------------------------
@@ -213,10 +250,11 @@ void GPUScene::keyPressed(int key){
     loadVectorField();
     break;
     case 'f':
+      showField = !showField;
       // glm::vec2 * field_arr = vectorField.getField();
       //
       //
-      // cout << field_arr[0] <<"\n";
+      cout << showField <<"\n";
 
       break;
   }

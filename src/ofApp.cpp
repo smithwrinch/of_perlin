@@ -33,6 +33,7 @@ void ofApp::update(){
           gpuScene.getVectorField()->copy(fieldScene.getVectorField());
           currentScene->setID(2);
           currentScene = &gpuScene;
+          gpuScene.texturiseField();
           break;
       }
     }

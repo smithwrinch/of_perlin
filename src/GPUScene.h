@@ -1,6 +1,7 @@
 #include "ofMain.h"
 #include "baseScene.h"
 
+#define MAX_PARTICLES 50000
 
 struct pingPongBuffer {
 public:
@@ -44,6 +45,7 @@ class GPUScene : public BaseScene{
     void setup();
     void update();
     void draw();
+		void texturiseField();
 
 		VectorField * getVectorField();
     void keyPressed(int key);
@@ -55,29 +57,46 @@ class GPUScene : public BaseScene{
 		VectorField vectorfield;
     void resetPositions();
     void loadVectorField();
-		void texturiseField();
+		void addParticle(float x, float y);
+		void setupGui();
+		void loadParticleTexture();
+		void togglePlay();
     glm::vec2 offsets;
+		vector<float> pos;
 		ofImage image;
+		bool showField;
+
+		// gui
+	  ofxPanel gui;
+		ofxIntSlider brushRadius;
+		ofxFloatSlider timeStep;
+		ofxIntSlider particleSize;
+    ofParameter<ofColor> particleColour;
+		ofxButton loadButton;
+		ofxButton loadParticleButton;
+		ofxButton playButton;
 
     ofShader    updatePos;
   	ofShader    updateVel;
   	ofShader    updateRender;
 
   	pingPongBuffer posPingPong;
-  	pingPongBuffer velPingPong;
+  	// pingPongBuffer velPingPong;
 
   	ofFbo   renderFBO;
 
   	ofImage sparkImg;
   	ofImage fieldVelocities;
 
-  	float   timeStep;
-  	float   particleSize;
+  	// float   timeStep;
+  	// float   particleSize;
 
   	int     width, height;
   	int     imgWidth, imgHeight;
   	int     numParticles;
-  	int     textureRes;
+		int 		activeParticles;
+		int     textureRes;
+
 
 
   	ofVboMesh mesh;

@@ -390,14 +390,22 @@ void VectorField::convertToImage(){
     int w = i % width;
     int h = i / width;
     // out.setColor(w, h, ofColor(field[i].x, field[i].y, 0));
-    a.getPixels()[i*3] = 255*field[i].x;
-    a.getPixels()[i*3+1] = 255*field[i].y;
+
     a.getPixels()[i*3+2] = 0;
+    if(field[i].x < 0){
+      a.getPixels()[i*3+2] = 64;
+    }
+    if(field[i].y < 0){
+      a.getPixels()[i*3+2] += 128;
+    }
+
+    a.getPixels()[i*3] = abs(128*field[i].x);
+    a.getPixels()[i*3+1] = abs(128*field[i].y);
 
   }
 
   ofPixels & pixels = a.getPixels();
-  pixels.swapRgb();   // fix inverted R and B channels
+  // pixels.swapRgb();   // fix inverted R and B channels
   ofSaveImage(pixels, "temp.png", OF_IMAGE_QUALITY_BEST);
 }
 

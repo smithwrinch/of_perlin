@@ -4,7 +4,7 @@ void FieldScene::setup(){
   gui.setup();
   // gui.add(width.setup("width", ofGetWidth(), 1, ofGetWidth()));
   // gui.add(height.setup("height", ofGetHeight(), 1, ofGetHeight()));
-  gui.add(spacing.setup("scale", 6, 1, 10));
+  gui.add(spacing.setup("scale", 6, 1, 20));
   gui.add(brushRadius.setup("brush radius", 0, 0, 400));
   gui.add(effect.setup("smudge strength (right)", 1, -1, 1));
   gui.add(strength.setup("source strength (left)", 1, -1, 1));
