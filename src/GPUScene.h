@@ -46,6 +46,7 @@ class GPUScene : public BaseScene{
     void update();
     void draw();
 		void texturiseField();
+		void spawnFuckingLoads();
 
 		VectorField * getVectorField();
     void keyPressed(int key);
@@ -96,6 +97,7 @@ class GPUScene : public BaseScene{
   	int     numParticles;
 		int 		activeParticles;
 		int     textureRes;
+		float   spacing;
 
 
 

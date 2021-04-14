@@ -18,11 +18,20 @@ void GPUScene::setupGui(){
 void GPUScene::texturiseField(){
   vectorField.convertToImage();
   image.load("temp.png");
-  image.resize(800,800);
-  ofSaveImage(image.getPixels(), "temp2.png", OF_IMAGE_QUALITY_BEST);
+  // image.resize(800,800);
+  // ofSaveImage(image.getPixels(), "temp2.png", OF_IMAGE_QUALITY_BEST);
+}
+
+void GPUScene::spawnFuckingLoads(){
+  for(int x = 0; x < 100; x++){
+    for(int y = 0; y < 100; y++){
+      addParticle(ofRandom(800+offsets.x), ofRandom(800+offsets.y));
+    }
+  }
 }
 
 void GPUScene::resetPositions(){
+  activeParticles=0;
   for (int x = 0; x < textureRes; x++){
       for (int y = 0; y < textureRes; y++){
           int i = textureRes * y + x;
@@ -37,6 +46,10 @@ void GPUScene::resetPositions(){
 
 
 void GPUScene::addParticle(float x, float y){
+  if(activeParticles > MAX_PARTICLES){
+    cout << "too many particles!" <<"\n";
+    return;
+  }
   pos[activeParticles*3] = (x-offsets.x)/width;
   pos[activeParticles*3 + 1] = (y-offsets.y)/height;
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
@@ -48,7 +61,7 @@ void GPUScene::loadVectorField(){
   ofFileDialogResult result = ofSystemLoadDialog("Load file");
   if(result.bSuccess) {
     string path = result.getPath();
-    vectorField.loadFromFile(path);
+    spacing = vectorField.loadFromFile(path);
     cout << "loaded" << "\n";
   }
   texturiseField();
@@ -65,6 +78,7 @@ void GPUScene::setup(){
   setupGui();
   showField = false;
   vectorField.setup(3);
+  spacing = 3;
   vectorField.perlin(0.0077);
   offsets = vectorField.getOffset();
   texturiseField();
@@ -151,6 +165,7 @@ void GPUScene::draw(){
   }
 }
 void GPUScene::update(){
+  spacing = vectorField.getSpacing();
   // velPingPong.dst->begin();
   ofClear(0);
   updateVel.begin();
@@ -181,6 +196,8 @@ void GPUScene::update(){
   // updatePos.setUniformTexture("velData", velPingPong.src->getTexture(), 1);  // Velocity
   updatePos.setUniformTexture("velData", image.getTexture() , 1); // passing in field texture
   updatePos.setUniform1f("timestep",(float) timeStep );
+  updatePos.setUniform1f("spacing", (float) spacing);
+  updatePos.setUniform1f("width", (float) 800/spacing);
 
   // draw the source position texture to be updated
   posPingPong.src->draw(0, 0);
@@ -256,6 +273,9 @@ void GPUScene::keyPressed(int key){
       //
       cout << showField <<"\n";
 
+      break;
+    case 'b':
+      spawnFuckingLoads();
       break;
   }
 }

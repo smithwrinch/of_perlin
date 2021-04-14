@@ -33,5 +33,6 @@ void main(void){
       //  vel.y = -0.5 * abs(vel.y);
 
     // Then save the vel data into the velocity FBO.
-    vFragColor = vec4(vel.x,vel.y,0.0,1.0);
+    //vFragColor = vec4(vel.x,vel.y,0.0,1.0);
+    vFragColor = vec4(1.0, 2.0, 3.0, 0.);
 }
