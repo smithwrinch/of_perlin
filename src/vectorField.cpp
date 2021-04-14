@@ -22,6 +22,8 @@ void VectorField::setup(float s, float oX, float oY){
   height = HEIGHT/s;
   field = new glm::vec2[WIDTH*HEIGHT];
 
+  // floatingPointFbo.allocate(WIDTH, HEIGHT, GL_RGBA32F);
+
   // Instantiate expression and register symbol_table
   expressionX.register_symbol_table(symbol_table);
   expressionY.register_symbol_table(symbol_table);
@@ -54,7 +56,7 @@ void VectorField::draw(){
 
 
         if(dist > spacing){
-          ofSetColor(255 - dist*spacing, 255 - dist*spacing, 255);
+          ofSetColor(255 - dist*3/spacing, 255 - dist*3/spacing, 255);
           dX /= dist/spacing;
           dY /= dist/spacing;
         }
@@ -63,8 +65,8 @@ void VectorField::draw(){
 
         // for arrow head
         //
-        // ofDrawCircle(endX, endY, spacing*0.3);
 
+        // ofDrawCircle(dX + startX, dY + startY, spacing*0.05*dist);
       }
   	}
 
@@ -201,7 +203,7 @@ void VectorField::normalise(int i){
 
 
 void VectorField::setVector(string eqnX, string eqnY, double x, double y, int brushRadius){
-  //
+
   // exprtk::parser<double> parser;
   // for(int i=0; i<width*height; i++){
   // 	double xPos = i % width;
@@ -379,6 +381,17 @@ void VectorField::addEqnBrush(string eqnX, string eqnY, float x, float y, int br
   //
   // }
 }
+
+
+ofFbo * VectorField::convertToFloatBuffer(){
+
+
+  // floatingPointFbo.getTexture().loadData(field, WIDTH, HEIGHT);
+
+
+  return &floatingPointFbo;
+}
+
 //
 // // converts field to an image to be used as shader
 void VectorField::convertToImage(){
@@ -391,6 +404,30 @@ void VectorField::convertToImage(){
     int h = i / width;
     // out.setColor(w, h, ofColor(field[i].x, field[i].y, 0));
 
+    float x = field[i].x;
+    float y = field[i].y;
+
+    // float dist = sqrt(pow(x,2)+ pow(y,2));
+    // x /= dist;
+    // y/= dist;
+    //
+    // x += 1;
+    // y += 1;
+    // x *= 128;
+    // y *= 128;
+    //
+    // a.getPixels()[i*3+2] = 0;
+    // if(field[i].x < 0){
+    //   a.getPixels()[i*3+2] = 64;
+    // }
+    // if(field[i].y < 0){
+    //   a.getPixels()[i*3+2] += 128;
+    // }
+    //
+    a.getPixels()[i*3] = x;
+    a.getPixels()[i*3+1] = y;
+    a.getPixels()[i*3+2] = 0;
+
     a.getPixels()[i*3+2] = 0;
     if(field[i].x < 0){
       a.getPixels()[i*3+2] = 64;
@@ -399,8 +436,8 @@ void VectorField::convertToImage(){
       a.getPixels()[i*3+2] += 128;
     }
 
-    a.getPixels()[i*3] = abs(128*field[i].x);
-    a.getPixels()[i*3+1] = abs(128*field[i].y);
+    a.getPixels()[i*3] = abs(255*field[i].x);
+    a.getPixels()[i*3+1] = abs(255*field[i].y);
 
   }
 
@@ -580,7 +617,19 @@ void VectorField::saveXML(string fname){
 
 void VectorField::save(string fname){
 
+
   int numVectors = width * height;
+
+  cout << field[0] << "\n";
+  cout << field[1] << "\n";
+  cout << field[2] << "\n";
+  cout << field[3] << "\n";
+
+  cout << field[width*height-4] << "\n";
+  cout << field[width*height-3] << "\n";
+  cout << field[width*height-2] << "\n";
+  cout << field[width*height-1] << "\n";
+  cout << width*height << "\n";
 
   std::ofstream outFile("data/"+fname);
   outFile << std::to_string(spacing) << "\n";
@@ -622,11 +671,11 @@ int VectorField::loadFromFile(string fname){
          case 0:
          spacing = std::stof(tp);
          cout << std::stof(tp) << "\n";
-         break;
+          break;
          case 1:
          width = std::stof(tp);
          cout << std::stof(tp) << "\n";
-         break;
+          break;
          case 2:
           height = std::stof(tp);
           cout << std::stof(tp) << "\n";
@@ -635,15 +684,28 @@ int VectorField::loadFromFile(string fname){
          default:
            if(i % 2 == 0){
              field[idx].y = std::stof(tp);
+             idx ++;
            }else{
              field[idx].x = std::stof(tp);
-             idx ++;
            }
+           break;
        }
       i++;
     }
     newfile.close(); //close the file object.
   }
+
+  cout << field[0] << "\n";
+  cout << field[1] << "\n";
+  cout << field[2] << "\n";
+  cout << field[3] << "\n";
+
+  cout << field[width*height-4] << "\n";
+  cout << field[width*height-3] << "\n";
+  cout << field[width*height-2] << "\n";
+  cout << field[width*height-1] << "\n";
+  cout << width*height << "\n";
+
   return spacing;
 }
 

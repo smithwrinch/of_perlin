@@ -24,6 +24,7 @@ class VectorField {
     void setSpacing(float s);
     void copy(VectorField*vf);
     void convertToImage();
+    ofFbo* convertToFloatBuffer();
     void setAll(float x, float y);
 
     void setVector(string eqnX, string eqnY, double x, double y, int brushRadius);
@@ -60,5 +61,7 @@ class VectorField {
      float offY;
      // for saving
      ofxXmlSettings settings;
+
+     ofFbo floatingPointFbo;
 
   };

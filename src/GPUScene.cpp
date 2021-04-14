@@ -4,7 +4,7 @@
 void GPUScene::setupGui(){
   gui.setup();
   gui.add(brushRadius.setup("brush radius", 0, 0, 400));
-  gui.add(timeStep.setup("particle speed", 0.005, 0.0001, 0.01));
+  gui.add(timeStep.setup("particle speed", 0.005, 0.0001, 0.05));
   gui.add(particleSize.setup("particle size", 30., 10., 100.));
   gui.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
   gui.add(loadButton.setup("load field"));
@@ -46,7 +46,7 @@ void GPUScene::resetPositions(){
 
 
 void GPUScene::addParticle(float x, float y){
-  if(activeParticles > MAX_PARTICLES){
+  if(activeParticles >= MAX_PARTICLES-1000){
     cout << "too many particles!" <<"\n";
     return;
   }
@@ -68,6 +68,12 @@ void GPUScene::loadVectorField(){
 }
 
 void GPUScene::loadParticleTexture(){
+  ofFileDialogResult result = ofSystemLoadDialog("Load texture");
+  if(result.bSuccess) {
+    string path = result.getPath();
+    sparkImg.load(path);
+    cout << "loaded texture" << "\n";
+  }
 }
 
 void GPUScene::togglePlay(){

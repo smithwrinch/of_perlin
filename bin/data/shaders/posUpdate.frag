@@ -13,7 +13,7 @@ in vec2 vTexCoord;
 out vec4 vFragColor;
 
 
-vec2 getDir(vec2 pos_, vec2 field, vec2 field2){
+vec3 getDir(vec2 pos_, vec3 field, vec3 field2){
 
   //int width = int(800/spacing);
   //int height = int(800/spacing);
@@ -24,10 +24,8 @@ vec2 getDir(vec2 pos_, vec2 field, vec2 field2){
 	float pctX = float(stepX % int(spacing))/spacing;
 	float pctY = float(stepY % int(spacing))/spacing;
 
-//  vec2 diff = field - field2;
-
-  //return vec2(0,0);
-  return vec2(field2.x*pctX + field.x*(1-pctX), field2.y*pctY + field.y*(1-pctY));
+  return field2 *pctX + field *(1-pctX);
+  //return vec3(field2.x*pctX + field.x*(1-pctX), field2.y*pctY + field.y*(1-pctY));
 }
 
 void main(void){
@@ -38,10 +36,16 @@ void main(void){
 
 
     //interpolate
-    if(pos.y < float(798/800) && pos.x <float(798/800)){
-      vec3 vel2 = texture( velData, (pos+1)*800).xyz;
-      vel.xy = getDir(pos, vel.xy, vel2.xy);
+    if(pos.x < 1 && pos.y < 1){
+      vec3 vel2 = texture( velData, (pos+(spacing/800))*width).xyz;
+      vel = getDir(pos, vel, vel2);
+      //vel.x = 0;
     }
+
+//    vel -= 0.5;
+  //  pos += vel.xy * timestep;
+
+
 
     // Update the position.
 
