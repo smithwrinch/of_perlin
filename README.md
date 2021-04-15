@@ -65,7 +65,14 @@ Using ofxGUI added some controls.
 Since adding all of the particles within the brush seemed unnessasary (and caused lag, 1200 particles for a radius of size 20), I added a brush thickness. This just affects the step size in the iteration.
 ![](bin/data/img/c_thickness.jpg)
 \
-Adding more controls in speed, lifetime, and colour. Also added functionality to save the vector field in the generator. At first I saved to an XML file and gave all the attributes tags. This, however, took too long to save and load so I decided to encode the width,height, spacing, and all of the co-ordinates into a text file.
-
+Adding more controls in speed, lifetime, and colour. Also added functionality to save the vector field in the generator. At first I saved to an XML file and gave all the attributes tags. This, however, took too long to save and load so I decided to encode the width,height, spacing, and all of the co-ordinates into a text file (interlaced xyxy).
 ![](bin/data/img/nice5.jpg)
 \
+The field scene had a few teething issues.
+![](bin/data/img/lol2.jpg)
+\
+But eventually I could add sources/sinks as well as perlin noise and other controls.
+![](bin/data/img/sourcesinkcombo.jpg)
+\
+- <img src="https://latex.codecogs.com/gif.latex?O_t=\text { Onset event at time bin } t " />
+- <img src="https://latex.codecogs.com/gif.latex?x/frac{x^2 + y^2}" /> 
