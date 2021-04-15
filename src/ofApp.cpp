@@ -35,6 +35,14 @@ void ofApp::update(){
           currentScene = &gpuScene;
           gpuScene.texturiseField();
           break;
+        case -5:
+          currentScene->setID(3);
+          currentScene = &fieldScene;
+          break;
+        case -6:
+          currentScene->setID(3);
+          currentScene = &mainScene;
+          break;
       }
     }
     currentScene->update();
@@ -48,6 +56,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if( key == 'a'){
+    cout << currentScene->getID() << "\n";
     if(currentScene->getID() == 1){
       currentScene = &fieldScene;
     }

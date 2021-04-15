@@ -57,25 +57,36 @@ class GPUScene : public BaseScene{
 
 		VectorField vectorfield;
     void resetPositions();
+    void clearPositions();
     void loadVectorField();
 		void addParticle(float x, float y);
+		void addParticles(float x, float y);
 		void setupGui();
 		void loadParticleTexture();
 		void togglePlay();
+		void goToCreateField();
+		void goToMain();
     glm::vec2 offsets;
 		vector<float> pos;
+		vector<float> vel; // the field
 		ofImage image;
 		bool showField;
 
 		// gui
 	  ofxPanel gui;
 		ofxIntSlider brushRadius;
+		ofxIntSlider brushThickness;
 		ofxFloatSlider timeStep;
 		ofxIntSlider particleSize;
     ofParameter<ofColor> particleColour;
 		ofxButton loadButton;
 		ofxButton loadParticleButton;
 		ofxButton playButton;
+		ofxButton resetButton;
+		ofxButton clearButton;
+		ofxButton spawnRandomButton;
+		ofxButton createFieldButton;
+		ofxButton goToMainButton;
 
     ofShader    updatePos;
   	ofShader    updateVel;
@@ -85,6 +96,7 @@ class GPUScene : public BaseScene{
   	// pingPongBuffer velPingPong;
 
   	ofFbo   renderFBO;
+		//ofFbo   fieldVelocitiesFloat;
 
   	ofImage sparkImg;
   	ofImage fieldVelocities;

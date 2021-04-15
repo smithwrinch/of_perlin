@@ -22,7 +22,7 @@ void VectorField::setup(float s, float oX, float oY){
   height = HEIGHT/s;
   field = new glm::vec2[WIDTH*HEIGHT];
 
-  // floatingPointFbo.allocate(WIDTH, HEIGHT, GL_RGBA32F);
+//  floatingPointFbo.allocate(WIDTH, HEIGHT, GL_RGBA32F);
 
   // Instantiate expression and register symbol_table
   expressionX.register_symbol_table(symbol_table);
@@ -204,41 +204,45 @@ void VectorField::normalise(int i){
 
 void VectorField::setVector(string eqnX, string eqnY, double x, double y, int brushRadius){
 
-  // exprtk::parser<double> parser;
-  // for(int i=0; i<width*height; i++){
-  // 	double xPos = i % width;
-  // 	double yPos = i / width;
-  //
-  //   if( i % 1000 == 0){
-  //     cout << (i *100/(width*height)) << "% remaining" << "\n";
-  //   }
-  //
-  //   // Register x with the symbol_table
-  //
-  //    symbol_table.remove_variable("x");
-  //    symbol_table.remove_variable("y");
-  //    symbol_table.add_variable("x",xPos);
-  //    symbol_table.add_variable("y",yPos);
-  //
-  //
-  //    // Instantiate parser and compile the expression
-  //
-  //    if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
-  //      cout << "error: bad equation" << "\n";
-  //      return;
-  //    };
-  //
-  //    double resultX = 0.0;
-  //    double resultY = 0.0;
-  //
-  //    // Evaluate and print result
-  //    resultX = expressionX.value();
-  //    // printf("Result1: %10.5f\n",resultX);
-  //    resultY = expressionY.value();
-  //    // printf("Result1: %10.5f\n",resultY);
-  //    field[i].x = float(resultX);
-  //    field[i].y = float(resultY);
-  //  }
+  exprtk::parser<double> parser;
+  for(int i=0; i<width*height; i++){
+  	double xPos = i % width;
+  	double yPos = i / width;
+
+    if( i % 1000 == 0){
+      cout << (i *100/(width*height)) << "% remaining" << "\n";
+    }
+
+
+    xPos -= width/2;
+    yPos -= height/2;
+
+    // Register x with the symbol_table
+
+     symbol_table.remove_variable("x");
+     symbol_table.remove_variable("y");
+     symbol_table.add_variable("x",xPos);
+     symbol_table.add_variable("y",yPos);
+
+
+     // Instantiate parser and compile the expression
+
+     if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+       cout << "error: bad equation" << "\n";
+       return;
+     };
+
+     double resultX = 0.0;
+     double resultY = 0.0;
+
+     // Evaluate and print result
+     resultX = expressionX.value();
+     // printf("Result1: %10.5f\n",resultX);
+     resultY = expressionY.value();
+     // printf("Result1: %10.5f\n",resultY);
+     field[i].x = float(resultX);
+     field[i].y = float(resultY);
+   }
 
 }
 
@@ -328,65 +332,68 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
 }
 
 void VectorField::addEqnBrush(string eqnX, string eqnY, float x, float y, int brushRadius){
-  // exprtk::parser<double> parser;
-  // if(brushRadius==0){
-  //   return;
-  // }
-  // for(int i=0; i<width*height; i++){
-  //   int w = i % width;
-  //   int h = i / width;
-  //   double xPos = w * spacing + offX;
-  //   double yPos = h * spacing + offY;
-  //   float dirX = xPos - x;
-  //   float dirY = yPos - y;
-  //   float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
-  //   if(dist > brushRadius){ //inside cricle
-  //     continue;
-  //   }
-  //
-  //   // Register x with the symbol_table
-  //   xPos -= offX;
-  //   yPos -= offY;
-  //
-  //   xPos -= WIDTH/2;
-  //   yPos -= HEIGHT/2;
-  //
-  //   xPos /= spacing;
-  //   yPos /= spacing;
-  //
-  //   symbol_table.remove_variable("x");
-  //   symbol_table.remove_variable("y");
-  //   symbol_table.add_variable("x",xPos);
-  //   symbol_table.add_variable("y",yPos);
-  //
-  //
-  //   // Instantiate parser and compile the expression
-  //
-  //   if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
-  //    cout << "error: bad equation" << "\n";
-  //    return;
-  //   };
-  //
-  //   double resultX = 0.0;
-  //   double resultY = 0.0;
-  //
-  //   // Evaluate and print result
-  //   resultX = expressionX.value();
-  //   // printf("Result1: %10.5f\n",resultX);
-  //   resultY = expressionY.value();
-  //   // printf("Result1: %10.5f\n",resultY);
-  //   field[i].x = float(resultX);
-  //   field[i].y = float(resultY);
-  //
-  //
-  // }
+  exprtk::parser<double> parser;
+  if(brushRadius==0){
+    return;
+  }
+  for(int i=0; i<width*height; i++){
+    int w = i % width;
+    int h = i / width;
+    double xPos = w * spacing + offX;
+    double yPos = h * spacing + offY;
+    float dirX = xPos - x;
+    float dirY = yPos - y;
+    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    if(dist > brushRadius){ //inside cricle
+      continue;
+    }
+
+    // Register x with the symbol_table
+    //xPos -= offX;
+    //yPos -= offY;
+
+    // xPos -= WIDTH/2;
+    // yPos -= HEIGHT/2;
+    //
+    // xPos /= spacing;
+    // yPos /= spacing;
+
+    xPos -= x;
+    yPos -= y;
+
+    symbol_table.remove_variable("x");
+    symbol_table.remove_variable("y");
+    symbol_table.add_variable("x",xPos);
+    symbol_table.add_variable("y",yPos);
+
+
+    // Instantiate parser and compile the expression
+
+    if(!parser.compile(eqnX,expressionX) || !parser.compile(eqnY,expressionY)){
+     cout << "error: bad equation" << "\n";
+     return;
+    };
+
+    double resultX = 0.0;
+    double resultY = 0.0;
+
+    // Evaluate and print result
+    resultX = expressionX.value();
+    // printf("Result1: %10.5f\n",resultX);
+    resultY = expressionY.value();
+    // printf("Result1: %10.5f\n",resultY);
+    field[i].x = float(resultX);
+    field[i].y = float(resultY);
+
+
+  }
 }
 
 
 ofFbo * VectorField::convertToFloatBuffer(){
 
 
-  // floatingPointFbo.getTexture().loadData(field, WIDTH, HEIGHT);
+//  floatingPointFbo.getTexture().loadData(field, WIDTH, HEIGHT);
 
 
   return &floatingPointFbo;
@@ -424,8 +431,8 @@ void VectorField::convertToImage(){
     //   a.getPixels()[i*3+2] += 128;
     // }
     //
-    a.getPixels()[i*3] = x;
-    a.getPixels()[i*3+1] = y;
+    // a.getPixels()[i*3] = x;
+    // a.getPixels()[i*3+1] = y;
     a.getPixels()[i*3+2] = 0;
 
     a.getPixels()[i*3+2] = 0;
@@ -446,88 +453,6 @@ void VectorField::convertToImage(){
   ofSaveImage(pixels, "temp.png", OF_IMAGE_QUALITY_BEST);
 }
 
-void VectorField::setFromImage(ofImage & image){
-
-    int imgW = image.getWidth();
-    int imgH = image.getHeight();
-	  int imgPixelCount = imgW * imgH;
-
-
-	// storage for brightness
-	unsigned char * imagePixels = image.getPixels().getData();
-	unsigned char* brightness = new unsigned char[imgPixelCount];
-
-	if( image.getPixels().getImageType() == OF_IMAGE_GRAYSCALE){
-
-		for(int x=0; x<imgW; x++){
-			for(int y=0; y<imgH; y++){
-
-				int srcPos = y * imgW + x;
-
-				unsigned char b = imagePixels[srcPos];
-
-				brightness[srcPos] = b;
-			}
-		}
-
-	} else {
-
-		// convert RGB to luma
-		unsigned char * imagePixels = image.getPixels().getData();
-		unsigned char* brightness = new unsigned char[imgPixelCount];
-		int bpp = image.getPixels().getBytesPerPixel();
-
-		for(int x=0; x<imgW; x++){
-			for(int y=0; y<imgH; y++){
-
-				int dstPos = y * imgW + x;
-				int srcPos = dstPos * 3;
-
-				unsigned char r = imagePixels[srcPos];
-				unsigned char g = imagePixels[srcPos+1];
-				unsigned char b = imagePixels[srcPos+2];
-
-				brightness[dstPos] = ( r * 0.299) + (.587 * g) + (.114 * b);
-			}
-		}
-	}
-
-	// detetermine the vector at each position in the image
-
-	for(int x=1; x<width-1; x++){
-		for(int y=1; y<height-1; y++){
-
-			int vecPos = y * width + x;
-			char areaPixels[9];
-
-			// loop through the area pixels
-			for(int i=-1; i<=1; i++){
-				for(int j=-1; j<=1; j++){
-
-					// determine where to read from in the area (not optimized)
-					int readPos = ((y + j) * spacing * imgW + (x + i)*spacing) * 3;
-
-					unsigned char R = imagePixels[readPos];
-					unsigned char G = imagePixels[readPos+1];
-					unsigned char B = imagePixels[readPos+2];
-
-					char BR = (0.299 * R) + (.587 * G) + (.114 * B);
-
-					int writePos = (j+1) * 3 + (i + 1);
-
-					areaPixels[writePos] = BR;
-				}
-			}
-
-			float dX = (areaPixels[0] + areaPixels[3] + areaPixels[6])/3 - (areaPixels[2] + areaPixels[5] + areaPixels[8])/3;
-			float dY = (areaPixels[0] + areaPixels[1] + areaPixels[2])/3 - (areaPixels[6] + areaPixels[7] + areaPixels[8])/3;
-
-			field[vecPos].x = dY;
-			field[vecPos].y = dX;
-		}
-	}
-}
-
 
 void VectorField::setSpacing(float s){
   spacing = s;
@@ -542,8 +467,8 @@ glm::vec2 VectorField::getOffset(){
   return glm::vec2(offX, offY);
 }
 
-glm::vec2 * VectorField::getField(){
-  return field;
+glm::vec2 ** VectorField::getField(){
+  return &field;
 }
 
 int VectorField::getSpacing(){

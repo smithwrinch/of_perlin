@@ -60,13 +60,18 @@ void MainScene::screenshot(){
 }
 
 void MainScene::saveImage(ofImage * image){
-  string imgPath = "temp.jpg";
-  image->grabScreen( offsets.x, offsets.y, WIDTH, HEIGHT);
-  ofPixels & pixels = image->getPixels();
-  pixels.swapRgb();   // fix inverted R and B channels
-  ofSaveImage(pixels, imgPath, OF_IMAGE_QUALITY_BEST);
-  // img.clear();
-  pixels.clear();
+  ofFileDialogResult result = ofSystemSaveDialog("default.jpg", "Save Image");
+  if(result.bSuccess) {
+    string imgPath = result.getPath() + ".jpg";
+    // save your file to `path`
+    image->grabScreen( offsets.x, offsets.y, WIDTH, HEIGHT);
+    // image->grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+    ofPixels & pixels = image->getPixels();
+    pixels.swapRgb();   // fix inverted R and B channels
+    ofSaveImage(pixels, imgPath, OF_IMAGE_QUALITY_BEST);
+    // img.clear();
+    pixels.clear();
+  }
 }
 
 void MainScene::clearBackground(){

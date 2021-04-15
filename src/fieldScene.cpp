@@ -58,7 +58,7 @@ void FieldScene::setup(){
   sendToGPUButton.addListener(this, &FieldScene::sendToGPU);
   gui.add(sendToMainButton.setup("send to main"));
   sendToMainButton.addListener(this, &FieldScene::sendToMain);
-  gui.add(goToMainButton.setup("go back to main (a)"));
+  gui.add(goToMainButton.setup("go back to main (m)"));
   goToMainButton.addListener(this, &FieldScene::goToMain);
 
   vectorField.setup(1);
@@ -147,9 +147,11 @@ void FieldScene::update(){
 }
 
 void FieldScene::draw(){
+    ofBackground(30,30,30);
     if(!loading){
       gui.draw();
     }
+
     vectorField.draw();
     ofNoFill();
     ofDrawCircle(ofGetMouseX(), ofGetMouseY(), brushRadius);

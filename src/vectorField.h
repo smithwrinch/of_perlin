@@ -18,7 +18,6 @@ class VectorField {
     void perlin(float spacing=0.0077, float t1 = ofRandom(0,30), float t2 = ofRandom(0,30));
     void uniform(glm::vec2 u);
     void blur(int kernelSize, float sigma, float strength);
-    void setFromImage(ofImage & img);
     void normalise(float scalar=1);
     void normalise(int i);
     void setSpacing(float s);
@@ -39,7 +38,7 @@ class VectorField {
 
     glm::vec2 getVector(float x, float y);
     glm::vec2 getOffset();
-    glm::vec2 * getField();
+    glm::vec2 ** getField();
     int getSpacing();
 
     // for parsing equation

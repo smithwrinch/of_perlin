@@ -4,15 +4,24 @@
 void GPUScene::setupGui(){
   gui.setup();
   gui.add(brushRadius.setup("brush radius", 0, 0, 400));
+  gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
   gui.add(timeStep.setup("particle speed", 0.005, 0.0001, 0.05));
   gui.add(particleSize.setup("particle size", 30., 10., 100.));
-  gui.add(particleColour.set("particle color", ofColor(255, 255, 255, 255)));
-  gui.add(loadButton.setup("load field"));
+  gui.add(particleColour.set("particle color", ofColor(100, 255, 255, 255)));
+  gui.add(loadButton.setup("load field (l)"));
   loadButton.addListener(this, &GPUScene::loadVectorField);
   gui.add(loadParticleButton.setup("load particle texture"));
   loadParticleButton.addListener(this, &GPUScene::loadParticleTexture);
-  gui.add(playButton.setup("play/pause"));
-  playButton.addListener(this, &GPUScene::togglePlay);
+  gui.add(spawnRandomButton.setup("spawn random (b)"));
+  spawnRandomButton.addListener(this, &GPUScene::spawnFuckingLoads);
+  gui.add(resetButton.setup("reset (r)"));
+  resetButton.addListener(this, &GPUScene::resetPositions);
+  gui.add(clearButton.setup("clear (space)"));
+  clearButton.addListener(this, &GPUScene::clearPositions);
+  gui.add(createFieldButton.setup("create field (c)"));
+  createFieldButton.addListener(this, &GPUScene::goToCreateField);
+  gui.add(goToMainButton.setup("go to main (a)"));
+  goToMainButton.addListener(this, &GPUScene::goToMain);
 }
 
 void GPUScene::texturiseField(){
@@ -30,7 +39,15 @@ void GPUScene::spawnFuckingLoads(){
   }
 }
 
-void GPUScene::resetPositions(){
+void GPUScene::goToCreateField(){
+  setID(-5);
+}
+
+void GPUScene::goToMain(){
+  setID(-6);
+}
+
+void GPUScene::clearPositions(){
   activeParticles=0;
   for (int x = 0; x < textureRes; x++){
       for (int y = 0; y < textureRes; y++){
@@ -40,6 +57,11 @@ void GPUScene::resetPositions(){
           pos[i*3 + 2] = 0.0;
       }
   }
+  posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+  posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+}
+
+void GPUScene::resetPositions(){
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
 }
@@ -55,6 +77,20 @@ void GPUScene::addParticle(float x, float y){
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   // posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   activeParticles++;
+}
+
+
+void GPUScene::addParticles(float x, float y){
+  addParticle(x, y);
+  int thickness = 100/brushThickness;
+  for (int i = -brushRadius; i < brushRadius; i +=thickness){
+    for (int j = -brushRadius; j < brushRadius; j +=thickness){
+      if(sqrt(pow(i, 2) + pow(j, 2)) < brushRadius){
+        addParticle(x+i, y +j);
+      }
+    }
+  }
+
 }
 
 void GPUScene::loadVectorField(){
@@ -77,6 +113,7 @@ void GPUScene::loadParticleTexture(){
 }
 
 void GPUScene::togglePlay(){
+  clearPositions();
 }
 
 
@@ -138,6 +175,28 @@ void GPUScene::setup(){
   // velPingPong.src->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
   // velPingPong.dst->getTexture().loadData(vel.data(), textureRes, textureRes, GL_RGB);
 
+
+  // new velocities
+
+  vel.resize(width*height*2);
+
+  glm::vec2 * field = *vectorField.getField();
+
+  for(int y =0; y < height; y++){
+    for(int x = 0; x< width; x++){
+      int i = width*y + x;
+      vel[i*2] = field[i].x;
+      vel[i*2 + 1] = field[i].y;
+    }
+  }
+  // fieldVelocitiesFloat.allocate(width, height, GL_RGB32F);
+  // fieldVelocitiesFloat.getTexture().loadData(vel.data(), width, height, GL_RGB);
+
+
+  cout << vel[0] << "\n";
+
+
+
   // Loading and setings of the variables of the textures of the particles
   sparkImg.load("spark.png");
   imgWidth = sparkImg.getWidth();
@@ -159,13 +218,19 @@ void GPUScene::setup(){
   }
 }
 void GPUScene::draw(){
+
   ofBackground(0);
   gui.draw();
-  ofSetColor(100,255,255);
+  ofSetColor(particleColour.get().r,particleColour.get().g,particleColour.get().b);
   renderFBO.draw(offsets.x,offsets.y);
+  ofNoFill();
+  ofDrawCircle(ofGetMouseX(), ofGetMouseY(), brushRadius);
+  ofFill();
 
   ofSetColor(255);
-  ofDrawBitmapString("Fps: " + ofToString( ofGetFrameRate()), 15,15);
+  //ofDrawBitmapString("Fps: " + ofToString( ofGetFrameRate()), 15,15);
+
+  //ofDrawBitmapString("num Particles: " + ofToString(activeParticles), 15,30);
   if(showField){
     vectorField.draw();
   }
@@ -196,22 +261,26 @@ void GPUScene::update(){
   // With the velocity calculated updates the position
   //
   posPingPong.dst->begin();
+  // fieldVelocitiesFloat.begin();
   ofClear(0);
   updatePos.begin();
   updatePos.setUniformTexture("prevPosData", posPingPong.src->getTexture(), 0); // Previus position
+  //updatePos.setUniform2fv("fieldVel", &vel[0] , width*height*2);
   // updatePos.setUniformTexture("velData", velPingPong.src->getTexture(), 1);  // Velocity
   updatePos.setUniformTexture("velData", image.getTexture() , 1); // passing in field texture
+  // updatePos.setUniformTexture("fieldData", fieldVelocitiesFloat.getTexture(), 0); // Previus position
+
   updatePos.setUniform1f("timestep",(float) timeStep );
   updatePos.setUniform1f("spacing", (float) spacing);
   updatePos.setUniform1f("width", (float) 800/spacing);
 
   // draw the source position texture to be updated
   posPingPong.src->draw(0, 0);
-
   updatePos.end();
   posPingPong.dst->end();
 
   posPingPong.swap();
+  // fieldVelocitiesFloat.end();
 
 
   // Rendering
@@ -246,6 +315,12 @@ void GPUScene::update(){
     updateRender.end();
     renderFBO.end();
     ofPopStyle();
+    std::string title = std::to_string(ofGetFrameRate());
+    std::string s = std::to_string(activeParticles);
+    std::string ss = " : ";
+    title.append(ss);
+    title.append(s);
+    ofSetWindowTitle(title);
 }
 
 VectorField * GPUScene::getVectorField(){
@@ -254,19 +329,19 @@ VectorField * GPUScene::getVectorField(){
   return &vectorField;
 }
 void GPUScene::mouseDragged(int x, int y, int button){
-  addParticle(x, y);
+  addParticles(x, y);
 }
 
 //--------------------------------------------------------------
 void GPUScene::mousePressed(int x, int y, int button){
-  addParticle(x, y);
+  addParticles(x, y);
 }
 
 //--------------------------------------------------------------
 void GPUScene::keyPressed(int key){
   switch(key){
     case ' ':
-    resetPositions();
+    clearPositions();
     break;
 
     case 'l':
@@ -282,6 +357,12 @@ void GPUScene::keyPressed(int key){
       break;
     case 'b':
       spawnFuckingLoads();
+      break;
+    case 'r':
+      resetPositions();
+      break;
+    case 'c':
+      goToCreateField();
       break;
   }
 }
