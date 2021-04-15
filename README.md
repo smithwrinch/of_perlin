@@ -44,7 +44,7 @@ The software was written in C++ using the OpenFrameworks library. I wanted to be
 - load a texture for each particle (in a similar format to the one provided for best results).
 - Reset and clear the scene.
 
-### Video Walkthrough
+### Video Demonstration
 
 ## The Process
 In this section I will briefly (and very disjointly) mention the development process of the software including some technical challenges I experienced. I am not used to C++ so this was a good learning exercise, especially in understanding how OOP is applied in this language.
@@ -82,5 +82,18 @@ Adding the capability to apply equations to the field using [exprtk](https://git
 ![](bin/data/img/sin.jpg)
 \
 Inspired by the vector field of a magnet, I added a smudge affect. The effect is proportional to the reciprocal to the distance squared. This gives the user the ability to draw on the field.
-![](bin/data/img/sin.jpg)
+![](bin/data/img/draw.jpg)
 \
+After adding some extra features such as smoothing I decided to work on the GPU rendering. I would need a way to keep track of the particle positions for the shaders. For this I used ping pong rendering. In order to get the field data into the shader I decided to encode the field into an image and then texture. This created some very cool results.
+![](bin/data/1.png)
+![](bin/data/camp.png)
+![](bin/data/sink.png)
+![](bin/data/trippy.png)
+![](bin/data/notmalised.png)
+![](bin/data/circles.png)
+![](bin/data/ssource_with_dir.png)
+![](bin/data/nice.png)
+![](bin/data/smoothedperlin.png)
+![](bin/data/normalised.png)
+\
+Similar controls to the main scene were then implemented.
