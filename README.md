@@ -47,7 +47,7 @@ The software was written in C++ using the OpenFrameworks library. I wanted to be
 ### Video Walkthrough
 
 ## The Process
-In this section I will briefly mention the development process of the software including some technical challenges I experienced.
+In this section I will briefly (and very disjointly) mention the development process of the software including some technical challenges I experienced. I am not used to C++ so this was a good learning exercise, especially in understanding how OOP is applied in this language.
 \
 \
 I decided to rewrite the VectorField code from scratch so it could fit into the final work more readily.
@@ -71,8 +71,16 @@ Adding more controls in speed, lifetime, and colour. Also added functionality to
 The field scene had a few teething issues.
 ![](bin/data/img/lol2.jpg)
 \
-But eventually I could add sources/sinks as well as perlin noise and other controls.
+But eventually I could add sources/sinks (using equations [here](https://web.mit.edu/16.unified/www/FALL/fluids/Lectures/f15.pdf) as well as perlin noise and other controls. Below is a source followed by a source/sink combination in a uniform flow, also known as a doublet.
+![](bin/data/img/source.jpg)
 ![](bin/data/img/sourcesinkcombo.jpg)
 \
-- <img src="https://latex.codecogs.com/gif.latex?O_t=\text { Onset event at time bin } t " />
-- <img src="https://latex.codecogs.com/gif.latex?x/frac{x^2 + y^2}" /> 
+These vector fields could also be sent directly to the main scene without having to save and load them.
+![](bin/data/img/coolcombined.jpg)
+\
+Adding the capability to apply equations to the field using [exprtk](https://github.com/ArashPartow/exprtk) library. This parses the text and evaluates an output.
+![](bin/data/img/sin.jpg)
+\
+Inspired by the vector field of a magnet, I added a smudge affect. The effect is proportional to the reciprocal to the distance squared. This gives the user the ability to draw on the field.
+![](bin/data/img/sin.jpg)
+\
