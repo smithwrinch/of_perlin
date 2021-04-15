@@ -71,7 +71,7 @@ Adding more controls in speed, lifetime, and colour. Also added functionality to
 The field scene had a few teething issues.
 ![](bin/data/img/lol2.jpg)
 \
-But eventually I could add sources/sinks (using equations [here](https://web.mit.edu/16.unified/www/FALL/fluids/Lectures/f15.pdf) as well as perlin noise and other controls. Below is a source followed by a source/sink combination in a uniform flow, also known as a doublet.
+But eventually I could add sources/sinks (using equations [here](https://web.mit.edu/16.unified/www/FALL/fluids/Lectures/f15.pdf) as well as perlin noise and other controls. Below is a source in the main scene followed by a source/sink combination in a uniform flow, also known as a doublet, in the field scene.
 ![](bin/data/img/source.jpg)
 ![](bin/data/img/sourcesinkcombo.jpg)
 \
