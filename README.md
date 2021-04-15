@@ -4,7 +4,7 @@ This is the Git repository for the Creative Coding 2 Project.
 ### Overview
 The software was written in C++ using the OpenFrameworks library. I wanted to be able to create cool generative art through particles interacting with a vector field. The plan was to build on my work [here](https://youtu.be/sq7wbopaGDY) taking inspiration from the oFxVectorField Addon by [Jeremy Rotsztain](https://github.com/mantissa/ofxVectorField). In order to allow the user to create vector field generative images with as much control as possible, it was important to develop a sophisticated vector field generator as well as a scene where they could add particles dynamically. This would be done on the CPU as well as on the GPU using shaders - although with less functionality. After building a very rudimentary "scene" manager, the software is split up into three scenes.
 
-![](bin/data/img/nice3_.jpg)
+![](bin/data/img/nice3.jpg)
 ## Features
 ![](bin/data/img/nice2_.jpg)
 ### Main Scene (CPU)
