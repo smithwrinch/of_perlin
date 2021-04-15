@@ -43,4 +43,29 @@ The software was written in C++ using the OpenFrameworks library. I wanted to be
 - Change the colour of the particles.
 - load a texture for each particle (in a similar format to the one provided for best results).
 - Reset and clear the scene.
+
+### Video Walkthrough
+
 ## The Process
+In this section I will briefly mention the development process of the software including some technical challenges I experienced.
+\
+\
+I decided to rewrite the VectorField code from scratch so it could fit into the final work more readily.
+![](bin/data/img/img1.png)
+\
+Adding particle paths using ofPath in the Particle class. With each update it curves to the new particle's position.
+![](bin/data/img/img2.png)
+\
+The first brush iteration (just a line). Eventually this just iterated over a square of brush radius *2 and checked whether the distance of the indices was within the radius.
+![](bin/data/img/wb3.png)
+\
+Using ofxGUI added some controls.
+![](bin/data/img/c3.jpg)
+\
+Since adding all of the particles within the brush seemed unnessasary (and caused lag, 1200 particles for a radius of size 20), I added a brush thickness. This just affects the step size in the iteration.
+![](bin/data/img/c_thickness.jpg)
+\
+Adding more controls in speed, lifetime, and colour. Also added functionality to save the vector field in the generator. At first I saved to an XML file and gave all the attributes tags. This, however, took too long to save and load so I decided to encode the width,height, spacing, and all of the co-ordinates into a text file.
+
+![](bin/data/img/nice5.jpg)
+\

@@ -7,7 +7,7 @@ void FieldScene::setup(){
   gui.add(spacing.setup("scale", 6, 1, 20));
   gui.add(brushRadius.setup("brush radius", 0, 0, 400));
   gui.add(effect.setup("smudge strength (right)", 1, -1, 1));
-  gui.add(strength.setup("source strength (left)", 1, -1, 1));
+  gui.add(strength.setup("source strength (left)", 1, -5, 5));
 
 
   gui.add(saveGroup.setup("save/load"));
@@ -62,7 +62,7 @@ void FieldScene::setup(){
   goToMainButton.addListener(this, &FieldScene::goToMain);
 
   vectorField.setup(1);
-  vectorField.uniform(glm::vec2(1,1));
+  vectorField.uniform(glm::vec2(1,0));
   // vectorField.save();
 }
 

@@ -306,7 +306,9 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
     float xVal = field[i].x;
     float yVal = field[i].y;
 
-    float dist = sqrt(pow(dirX, 2) + pow(dirY, 2));
+    float d =pow(dirX, 2) + pow(dirY, 2);
+
+    float dist = sqrt(d);
     if(dist > brushRadius && brushRadius !=0){ //inside cricle
       continue;
     }
@@ -318,8 +320,8 @@ void VectorField::addSink(float x, float y, int brushRadius, float strength){
     // float outX = -(strength/100)*(xVal*dirX)/(pow(xVal,2) + pow(yVal,2));
     // float outY = -(strength/100)*(yVal*dirY)/(pow(xVal,2) + pow(yVal,2));
 
-    float outX = strength *dirX/dist;
-    float outY = strength *dirY/dist;
+    float outX = strength *dirX*100/d;
+    float outY = strength *dirY*100/d;
     if(brushRadius !=0){
       outX *= (1 - dist/brushRadius);
       outY *= (1 - dist/brushRadius);
