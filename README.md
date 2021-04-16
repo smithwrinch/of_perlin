@@ -88,13 +88,11 @@ Inspired by the vector field of a magnet, I added a smudge affect. The effect is
 ![](bin/data/img/draw.jpg)
 \
 After adding some extra features such as smoothing I decided to work on the GPU rendering. I would need a way to keep track of the particle positions for the shaders. For this I used ping pong rendering. In order to get the field data into the shader I decided to encode the field into an image and then texture. This created some very cool results.
-![](bin/data/1.png)
-![](bin/data/camp.png)
+![](bin/data/camo.png)
 ![](bin/data/sink.png)
 ![](bin/data/trippy.png)
-![](bin/data/notmalised.png)
 ![](bin/data/circles.png)
-![](bin/data/ssource_with_dir.png)
+![](bin/data/ssource.png)
 ![](bin/data/nice.png)
 ![](bin/data/smoothedperlin.png)
 ![](bin/data/normalised.png)
