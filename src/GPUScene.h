@@ -66,11 +66,16 @@ class GPUScene : public BaseScene{
 		void togglePlay();
 		void goToCreateField();
 		void goToMain();
+		void toggleGlow();
+		void toggleTrails();
+		void screenshot();
     glm::vec2 offsets;
 		vector<float> pos;
 		vector<float> vel; // the field
 		ofImage image;
 		bool showField;
+		bool showGlow;
+		bool showTrails;
 
 		// gui
 	  ofxPanel gui;
@@ -87,6 +92,9 @@ class GPUScene : public BaseScene{
 		ofxButton spawnRandomButton;
 		ofxButton createFieldButton;
 		ofxButton goToMainButton;
+		ofxButton toggleGlowButton;
+		ofxButton toggleTrailsButton;
+		ofxButton screenshotButton;
 
     ofShader    updatePos;
   	ofShader    updateVel;
@@ -101,8 +109,8 @@ class GPUScene : public BaseScene{
   	ofImage sparkImg;
   	ofImage fieldVelocities;
 
-  	// float   timeStep;
-  	// float   particleSize;
+		ofImage out;
+		// ofPixels  pixels;
 
   	int     width, height;
   	int     imgWidth, imgHeight;

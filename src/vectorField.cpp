@@ -273,7 +273,7 @@ void VectorField::addMagnet(float x, float y, int brushRadius, float strength){
     float theta = atan(dirY / dirX);
 
     if(dist == 0){
-      dist = 0.001;
+      dist = 0.1;
     }
 
     float r = (strength*500/(dist*dist));
@@ -408,22 +408,76 @@ void VectorField::convertToImage(){
   a.allocate(width,height, OF_IMAGE_COLOR);
   a.setColor(ofColor::white);
   a.update();
+
+  float maxX =0;
+  float maxY = 0;
+
+  float minX = 1000;
+  float minY = 1000;
+
+  float maxV = 0;
+  float minV = 0;
+
+  for(int i=0; i<width*height; i++){
+    float x = field[i].x;
+    float y = field[i].y;
+    float dist = sqrt(pow(x,2)+ pow(y,2));
+    if(x > maxX) maxX = x;
+    if(x < minX) minX = x;
+    if(y > maxY) maxY = y;
+    if(y < minY) minY = y;
+  }
+    cout << minX <<"\n";
+    cout << minY <<"\n";
+    cout << maxX <<"\n";
+    cout << maxY <<"\n\n\n\n";
+
+  if(maxX > maxY){
+    maxV = maxX;
+  }
+  else{
+    maxV = maxY;
+  }
+
+  if(minX < minY){
+    minV = minX;
+  }
+  else{
+    minV = minY;
+  }
+
   for(int i=0; i<width*height; i++){
     int w = i % width;
     int h = i / width;
-    // out.setColor(w, h, ofColor(field[i].x, field[i].y, 0));
 
     float x = field[i].x;
     float y = field[i].y;
 
-    // float dist = sqrt(pow(x,2)+ pow(y,2));
-    // x /= dist;
-    // y/= dist;
-    //
+    if(abs(minV) > abs(maxV)){
+      maxV = -minV;
+    }
+    else{
+      minV = -maxV;
+    }
+    float diff = maxV - minV;
+    if(diff == 0) diff = 0.001;
+    x = (x - minV)/(diff);
+    y = (y - minV)/(diff);
+
     // x += 1;
     // y += 1;
-    // x *= 128;
-    // y *= 128;
+    x *= 255;
+    y *= 255;
+
+
+
+    a.getPixels()[i*3] = x;
+    a.getPixels()[i*3+1] = y;
+    a.getPixels()[i*3+2] = 0;
+
+
+
+    // a.getPixels()[i*3+2] = 0;
     //
     // a.getPixels()[i*3+2] = 0;
     // if(field[i].x < 0){
@@ -433,20 +487,8 @@ void VectorField::convertToImage(){
     //   a.getPixels()[i*3+2] += 128;
     // }
     //
-    // a.getPixels()[i*3] = x;
-    // a.getPixels()[i*3+1] = y;
-    a.getPixels()[i*3+2] = 0;
-
-    a.getPixels()[i*3+2] = 0;
-    if(field[i].x < 0){
-      a.getPixels()[i*3+2] = 64;
-    }
-    if(field[i].y < 0){
-      a.getPixels()[i*3+2] += 128;
-    }
-
-    a.getPixels()[i*3] = abs(255*field[i].x);
-    a.getPixels()[i*3+1] = abs(255*field[i].y);
+    // a.getPixels()[i*3] = abs(255*abs(field[i].x));
+    // a.getPixels()[i*3+1] = abs(255*abs(field[i].y));
 
   }
 

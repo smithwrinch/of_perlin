@@ -22,12 +22,13 @@ vec3 getDir(vec2 pos_, vec3 field, vec3 field2){
 	float pctX = float(stepX % int(spacing))/spacing;
 	float pctY = float(stepY % int(spacing))/spacing;
 */
-  float topX = ceil(pos_.x*width);
-  float topY = ceil(pos_.y*width);
 
-  vec2 posTop = vec2(topX, topY);
+  float topX = floor(pos_.x*width);
+  float topY = floor(pos_.y*width);
 
-  vec2 pct = posTop/width - pos_;
+  vec2 posBtm = vec2(topX, topY);
+
+  vec2 pct = pos_ - posBtm/width;
 
   float newX =field2.x*pct.x + field.x*(1-pct.x);
   float newY =field2.y*pct.y + field.y*(1-pct.y);
@@ -53,39 +54,29 @@ void main(void){
 
     vec3 vel = texture( velData, posBtm).xyz;
 
+    if(vel.x!=0){
+      vel.x -= 0.5;
+    }
+    if(vel.y !=0){
+      vel.y -= 0.5;
+    }
+
     //pos += vel. * timestep;
     //interpolate
     if(pos.x < 1 && pos.y < 1){
       vec3 vel2 = texture( velData, posTop).xyz;
+      if(vel2.x!=0){
+        vel2.x -= 0.5;
+      }
+      if(vel2.y !=0){
+        vel2.y -= 0.5;
+      }
+
       vel = getDir(pos, vel, vel2);
-      //vel.x = 0;
     }
 
 //    vel -= 0.5;
-  //  pos += vel.xy * timestep;
-
-
-
-    // Update the position.
-
-
-    if(vel.z <= 0.25){
-      pos += vel.xy*timestep;
-    }
-    else if(vel.z <= 0.5){
-      pos.x -= vel.x * timestep;
-      pos.y += vel.y * timestep;
-    }
-    else if (vel.z <= 0.75){
-      pos.x += vel.x * timestep;
-      pos.y -= vel.y * timestep;
-    }
-    else{
-      pos -= vel.xy * timestep;
-    }
-
-    //pos += (fieldVel/255);
-
+    pos += vel.xy * timestep;
 
     // And finally store it on the position FBO.
     vFragColor = vec4(pos.x,pos.y,1.0,1.0);

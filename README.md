@@ -36,16 +36,19 @@ The software was written in C++ using the OpenFrameworks library. I wanted to be
 - Divide all field strengths through a custom number,
 - Clear the field (all velocities 0) or reset (uniform flow).
 - Send the field to the main or the gpu.
-### GPU Scene (Beta)
+### GPU Scene
 ![](bin/data/img/gpu1.png)
 - Similarly add one particle or through a brush of a defined radius and thickness.
-- Change the speed/timestep of each particle.
+- Change the speed/timestep/size of each particle.
 - Change the colour of the particles.
-- load a texture for each particle (in a similar format to the one provided for best results).
+- Load a texture for each particle (in a similar format to the one provided for best results).
+- Toggle glow effect (additive blending).
+- Toggle trail.
+- Save image.
 - Reset and clear the scene.
 
 ### Video Demonstration
-
+[![video](https://img.youtube.com/vi/A9vMts4HsMY/0.jpg)](https://www.youtube.com/watch?v=A9vMts4HsMY)
 ## The Process
 In this section I will briefly (and very disjointly) mention the development process of the software including some technical challenges I experienced. I am not used to C++ so this was a good learning exercise, especially in understanding how OOP is applied in this language.
 \
@@ -97,3 +100,8 @@ After adding some extra features such as smoothing I decided to work on the GPU 
 ![](bin/data/normalised.png)
 \
 Similar controls to the main scene were then implemented.
+
+![](bin/data/circles.jpg)
+\
+![](bin/data/img/nice6.jpg)
+\

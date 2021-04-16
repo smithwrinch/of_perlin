@@ -48,7 +48,14 @@ void MainScene::clearParticles(){
 
 void MainScene::rasterise(){
   // ofBackground(0,0,0, 0);
-  saveImage(&imgRast);
+  imgRast.grabScreen( offsets.x, offsets.y, WIDTH, HEIGHT);
+  // image->grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+  ofPixels & pixels = imgRast.getPixels();
+  pixels.swapRgb();   // fix inverted R and B channels
+  //ofSaveImage(pixels, "rasterised", OF_IMAGE_QUALITY_BEST);
+  // img.clear();
+  pixels.clear();
+
   imgAllocated = true;
   clearParticles();
 

@@ -6,22 +6,29 @@ void GPUScene::setupGui(){
   gui.add(brushRadius.setup("brush radius", 0, 0, 400));
   gui.add(brushThickness.setup("brush thickness", 1, 1, 20));
   gui.add(timeStep.setup("particle speed", 0.005, 0.0001, 0.05));
-  gui.add(particleSize.setup("particle size", 30., 10., 100.));
+  gui.add(particleSize.setup("particle size", 30., 1., 100.));
   gui.add(particleColour.set("particle color", ofColor(100, 255, 255, 255)));
   gui.add(loadButton.setup("load field (l)"));
   loadButton.addListener(this, &GPUScene::loadVectorField);
   gui.add(loadParticleButton.setup("load particle texture"));
   loadParticleButton.addListener(this, &GPUScene::loadParticleTexture);
+  gui.add(toggleGlowButton.setup("toggle glow (n)"));
+  toggleGlowButton.addListener(this, &GPUScene::toggleGlow);
+  gui.add(toggleTrailsButton.setup("toggle trails (m)"));
+  toggleTrailsButton.addListener(this, &GPUScene::toggleTrails);
   gui.add(spawnRandomButton.setup("spawn random (b)"));
   spawnRandomButton.addListener(this, &GPUScene::spawnFuckingLoads);
   gui.add(resetButton.setup("reset (r)"));
   resetButton.addListener(this, &GPUScene::resetPositions);
-  gui.add(clearButton.setup("clear (space)"));
+  gui.add(clearButton.setup("clear (c)"));
   clearButton.addListener(this, &GPUScene::clearPositions);
-  gui.add(createFieldButton.setup("create field (c)"));
+  gui.add(screenshotButton.setup("screenshot (x)"));
+  screenshotButton.addListener(this, &GPUScene::screenshot);
+  gui.add(createFieldButton.setup("create field (q)"));
   createFieldButton.addListener(this, &GPUScene::goToCreateField);
   gui.add(goToMainButton.setup("go to main (a)"));
   goToMainButton.addListener(this, &GPUScene::goToMain);
+
 }
 
 void GPUScene::texturiseField(){
@@ -46,6 +53,12 @@ void GPUScene::goToCreateField(){
 void GPUScene::goToMain(){
   setID(-6);
 }
+void GPUScene::toggleGlow(){
+  showGlow = !showGlow;
+}
+void GPUScene::toggleTrails(){
+  showTrails = !showTrails;
+}
 
 void GPUScene::clearPositions(){
   activeParticles=0;
@@ -59,11 +72,15 @@ void GPUScene::clearPositions(){
   }
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+
+  showTrails = false;
 }
 
 void GPUScene::resetPositions(){
   posPingPong.src->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
   posPingPong.dst->getTexture().loadData(pos.data(), textureRes, textureRes, GL_RGB);
+
+  showTrails = false;
 }
 
 
@@ -116,9 +133,25 @@ void GPUScene::togglePlay(){
   clearPositions();
 }
 
+void GPUScene::screenshot(){
+  ofFileDialogResult result = ofSystemSaveDialog("default.jpg", "Save Image");
+  if(result.bSuccess) {
+    string imgPath = result.getPath() + ".jpg";
+    // save your file to `path`
+    out.grabScreen( offsets.x, offsets.y, WIDTH, HEIGHT);
+    // image->grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+    ofPixels & pixels = out.getPixels();
+    pixels.swapRgb();   // fix inverted R and B channels
+    ofSaveImage(pixels, imgPath, OF_IMAGE_QUALITY_BEST);
+    // img.clear();
+    pixels.clear();
+  }
+}
+
 
 void GPUScene::setup(){
   setupGui();
+  showGlow = true;
   showField = false;
   vectorField.setup(3);
   spacing = 3;
@@ -131,6 +164,8 @@ void GPUScene::setup(){
   activeParticles= 0;
   width = 800;
   height = 800;
+  // pixels.allocate(width, height, OF_PIXELS_RGBA);
+  out.allocate(width, height, OF_IMAGE_COLOR);
   // gui.setup("(g) to toggle");
   ofSetWindowTitle("GPU scene");
   updatePos.load("shaders/passthru.vert","shaders/posUpdate.frag");// shader for updating the texture that store the particles POSITION on RG channels
@@ -218,7 +253,6 @@ void GPUScene::setup(){
   }
 }
 void GPUScene::draw(){
-
   ofBackground(0);
   gui.draw();
   ofSetColor(particleColour.get().r,particleColour.get().g,particleColour.get().b);
@@ -234,7 +268,11 @@ void GPUScene::draw(){
   if(showField){
     vectorField.draw();
   }
+
 }
+
+
+
 void GPUScene::update(){
   spacing = vectorField.getSpacing();
   // velPingPong.dst->begin();
@@ -293,7 +331,9 @@ void GPUScene::update(){
   // 3.   that then on the Fragment Shader is going to be filled with the pixels of sparkImg texture
   //
   renderFBO.begin();
-    ofClear(0,0,0,0);
+    if(!showTrails){
+      ofClear(0,0,0,0);
+    }
     updateRender.begin();
     updateRender.setUniformTexture("posTex", posPingPong.dst->getTexture(), 0);
     updateRender.setUniformTexture("sparkTex", sparkImg.getTexture() , 1);
@@ -304,16 +344,18 @@ void GPUScene::update(){
     updateRender.setUniform1f("imgHeight", (float)sparkImg.getHeight());
 
     ofPushStyle();
-    ofEnableBlendMode( OF_BLENDMODE_ADD );
+    if(showGlow){
+      ofEnableBlendMode( OF_BLENDMODE_ADD );
+    }
     ofSetColor(255);
 
     mesh.draw();
 
     ofDisableBlendMode();
     glEnd();
-
     updateRender.end();
     renderFBO.end();
+
     ofPopStyle();
     std::string title = std::to_string(ofGetFrameRate());
     std::string s = std::to_string(activeParticles);
@@ -340,20 +382,25 @@ void GPUScene::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void GPUScene::keyPressed(int key){
   switch(key){
-    case ' ':
+    case 'x':
+      // ofSaveImage(pixels, "1.png", OF_IMAGE_QUALITY_BEST);
+      screenshot();
+      break;
+    case 'c':
     clearPositions();
     break;
-
+    case 'n':
+    toggleGlow();
+    break;
+    case 'm':
+    toggleTrails();
+    break;
     case 'l':
     loadVectorField();
     break;
     case 'f':
       showField = !showField;
-      // glm::vec2 * field_arr = vectorField.getField();
-      //
-      //
       cout << showField <<"\n";
-
       break;
     case 'b':
       spawnFuckingLoads();
@@ -361,7 +408,7 @@ void GPUScene::keyPressed(int key){
     case 'r':
       resetPositions();
       break;
-    case 'c':
+    case 'q':
       goToCreateField();
       break;
   }
